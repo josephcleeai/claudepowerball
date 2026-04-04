@@ -498,7 +498,147 @@
     .grid-4 { grid-template-columns: 1fr 1fr; }
   }
 
-  /* ── ANIMATIONS ──────────────────────────────── */
+  /* ── DEEP ANALYSIS STYLES ───────────────────────── */
+  .metric-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11.5px; font-weight: 600;
+    padding: 3px 10px; border-radius: 20px;
+    font-family: 'Nunito Sans', sans-serif;
+  }
+  .metric-pill.orange { background: rgba(217,119,87,0.12); color: var(--orange-dk); }
+  .metric-pill.blue   { background: rgba(106,155,204,0.14); color: var(--blue); }
+  .metric-pill.green  { background: rgba(90,122,69,0.14);  color: var(--green); }
+  .metric-pill.gold   { background: rgba(160,120,32,0.14); color: var(--gold); }
+
+  /* Draw metrics strip */
+  .draw-metrics-strip {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-top: 16px; padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .draw-metric {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 6px 12px;
+    display: flex; flex-direction: column; gap: 1px;
+    min-width: 80px;
+  }
+  .draw-metric .dm-label { font-size: 9.5px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--subtle); }
+  .draw-metric .dm-val   { font-size: 15px; font-weight: 700; color: var(--text); font-family: 'DM Mono', monospace; }
+
+  /* Pattern analysis grid */
+  .pattern-metrics-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+  }
+  .pm-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r2); padding: 18px 20px;
+    box-shadow: var(--shadow-sm);
+  }
+  .pm-card-title {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+    color: var(--subtle); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .pm-card-title .pm-icon {
+    width: 22px; height: 22px; border-radius: 5px;
+    display: flex; align-items: center; justify-content: center; font-size: 12px;
+  }
+  .pm-stat-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 5px 0; border-bottom: 1px solid var(--border);
+  }
+  .pm-stat-row:last-child { border-bottom: none; }
+  .pm-stat-row .pm-key  { font-size: 12.5px; color: var(--muted); }
+  .pm-stat-row .pm-val  { font-size: 13px; font-weight: 600; color: var(--text); font-family: 'DM Mono', monospace; }
+
+  /* Day-of-week correlation section */
+  .dow-tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+  .dow-tab {
+    padding: 6px 16px; border-radius: var(--r);
+    font-size: 12px; font-weight: 600; font-family: 'Nunito Sans', sans-serif;
+    color: var(--muted); background: var(--surface2);
+    border: 1px solid var(--border); cursor: pointer; transition: all 0.18s;
+  }
+  .dow-tab.active { background: var(--orange); color: #fff; border-color: var(--orange); }
+  .dow-tab:hover:not(.active) { border-color: var(--border2); color: var(--text); }
+
+  .dow-panel { display: none; }
+  .dow-panel.active { display: block; }
+
+  .dow-overview-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    margin-bottom: 20px;
+  }
+  .dow-stat-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 14px 16px;
+  }
+  .dow-stat-card .dsc-label { font-size: 10px; font-weight: 700; letter-spacing: 0.7px; text-transform: uppercase; color: var(--subtle); }
+  .dow-stat-card .dsc-val   { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1.2; font-family: 'DM Mono', monospace; }
+  .dow-stat-card .dsc-sub   { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+  /* Correlation table */
+  .corr-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .corr-table th {
+    background: var(--surface2); color: var(--muted);
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.7px; text-transform: uppercase;
+    padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border2);
+  }
+  .corr-table td { padding: 7px 12px; border-bottom: 1px solid var(--border); }
+  .corr-table tr:last-child td { border-bottom: none; }
+  .corr-table tr:hover td { background: rgba(0,0,0,0.02); }
+  .corr-bar {
+    height: 8px; border-radius: 4px;
+    display: inline-block; vertical-align: middle;
+    min-width: 2px; transition: width 0.3s;
+  }
+  .corr-val { font-family: 'DM Mono', monospace; font-size: 12px; }
+  .corr-pos { color: var(--orange); }
+  .corr-neg { color: var(--blue); }
+  .corr-label { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 3px; display: inline-block; }
+  .corr-strong-pos { background: rgba(217,119,87,0.15); color: var(--orange-dk); }
+  .corr-weak-pos   { background: rgba(217,119,87,0.07); color: var(--orange); }
+  .corr-neutral    { background: rgba(0,0,0,0.05); color: var(--subtle); }
+  .corr-weak-neg   { background: rgba(106,155,204,0.1); color: var(--blue); }
+  .corr-strong-neg { background: rgba(106,155,204,0.2); color: #2a5f8a; }
+
+  /* Hot/cold by day */
+  .hot-cold-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin: 4px 0; }
+  .hot-ball, .cold-ball {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; font-family: 'Nunito Sans', sans-serif;
+  }
+  .hot-ball  { background: var(--orange); color: #fff; }
+  .cold-ball { background: var(--blue-lt); color: var(--blue); border: 1px solid rgba(106,155,204,0.3); }
+
+  /* Summary comparison table (3-day) */
+  .day-compare-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .day-compare-table th {
+    background: var(--surface2); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.6px; text-transform: uppercase; color: var(--subtle);
+    padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border2);
+  }
+  .day-compare-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .day-compare-table tr:last-child td { border-bottom: none; }
+  .day-compare-table .day-tag {
+    font-weight: 700; font-size: 12px; padding: 3px 9px; border-radius: 5px;
+  }
+  .day-tag.mon { background: rgba(106,155,204,0.15); color: var(--blue); }
+  .day-tag.wed { background: rgba(217,119,87,0.15); color: var(--orange-dk); }
+  .day-tag.sat { background: rgba(90,122,69,0.15); color: var(--green); }
+
+  .dist-bar-wrap { height: 6px; background: var(--surface2); border-radius: 3px; width: 80px; display: inline-block; overflow: hidden; }
+  .dist-bar-fill { height: 100%; border-radius: 3px; }
+
+  @media (max-width: 768px) {
+    .pattern-metrics-grid { grid-template-columns: 1fr; }
+    .dow-overview-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) {
+    .dow-overview-grid { grid-template-columns: 1fr; }
+  }
+
   .fade-in { animation: fadeIn 0.4s ease both; }
   .slide-up { animation: slideUp 0.5s cubic-bezier(0.4,0,0.2,1) both; }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -535,6 +675,7 @@
     <div class="nav-links">
       <a href="#latest" class="active">Latest</a>
       <a href="#analysis">Analysis</a>
+      <a href="#deep-analysis">Deep Analysis</a>
       <a href="#history">History</a>
       <a href="#patterns">Patterns</a>
     </div>
@@ -726,10 +867,9 @@
           Number Heat Map
         </div>
         <div class="heatmap-legend">
-          <div class="legend-box" style="background:#1a1a17;"></div> Cold
-          <div class="legend-box" style="background:#6a4535;"></div>
-          <div class="legend-box" style="background:#b05030;"></div>
-          <div class="legend-box" style="background:#d97757;"></div> Hot
+          <div class="legend-box" style="background:#ffe8e5;border:1px solid rgba(0,0,0,0.08);"></div> Cold
+          <div class="legend-box" style="background:#ffb3a0;"></div>
+          <div class="legend-box" style="background:#e84020;"></div> Hot
         </div>
       </div>
       <div class="chart-card">
@@ -753,6 +893,128 @@
         </div>
       </div>
       <div class="grid-2" id="insights-grid"></div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         DEEP ANALYSIS SECTION
+         ═══════════════════════════════════════════════ -->
+    <section id="deep-analysis">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="icon" style="background:rgba(217,119,87,0.15);">🔬</div>
+          1st-Level Pattern Analysis
+        </div>
+        <div class="section-desc">Per-draw metrics: sum, odd/even, high/low, consecutive pairs, digit sum, spread</div>
+      </div>
+
+      <!-- Latest draw metrics strip -->
+      <div class="latest-card fade-in" style="margin-bottom:20px;">
+        <div class="latest-badge"><span>●</span> Latest Draw Metrics</div>
+        <div class="latest-date" id="latest-metrics-date">–</div>
+        <div id="latest-metrics-balls" class="balls-row" style="margin-bottom:0;"></div>
+        <div class="draw-metrics-strip" id="latest-metrics-strip"></div>
+      </div>
+
+      <!-- Aggregated pattern metric cards -->
+      <div class="pattern-metrics-grid" id="pattern-metrics-grid">
+        <!-- filled by JS -->
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         2ND-LEVEL: DAY-OF-WEEK CORRELATION
+         ═══════════════════════════════════════════════ -->
+    <section style="padding-top:0;">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="icon" style="background:rgba(90,122,69,0.15);">📅</div>
+          2nd-Level: Day-of-Week Correlation
+        </div>
+        <div class="section-desc">How 1st-level patterns differ across Monday, Wednesday & Saturday draws</div>
+      </div>
+
+      <!-- 3-day comparison table -->
+      <div class="chart-card fade-in" style="margin-bottom:20px;">
+        <h3>Draw-Day Metric Comparison</h3>
+        <p class="chart-desc">Average values of each 1st-level metric broken down by draw day.</p>
+        <div style="overflow-x:auto;">
+          <table class="day-compare-table" id="day-compare-table">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th><span class="day-tag mon">Monday</span></th>
+                <th><span class="day-tag wed">Wednesday</span></th>
+                <th><span class="day-tag sat">Saturday</span></th>
+                <th>Overall Avg</th>
+              </tr>
+            </thead>
+            <tbody id="day-compare-tbody"><!-- filled by JS --></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Per-day deep dive with tabs -->
+      <div class="chart-card fade-in">
+        <h3>Per-Day Deep Dive</h3>
+        <p class="chart-desc">Hot/cold numbers, metric distributions, and number-metric correlations for each draw day.</p>
+
+        <div class="dow-tabs">
+          <button class="dow-tab active" data-day="mon" onclick="switchDowTab('mon')">Monday</button>
+          <button class="dow-tab" data-day="wed" onclick="switchDowTab('wed')">Wednesday</button>
+          <button class="dow-tab" data-day="sat" onclick="switchDowTab('sat')">Saturday</button>
+        </div>
+
+        <!-- Monday panel -->
+        <div class="dow-panel active" id="dow-mon">
+          <div class="dow-overview-grid" id="dow-mon-overview"></div>
+          <div class="grid-2" style="gap:16px;">
+            <div>
+              <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;">Hot Numbers (Mon)</div>
+              <div class="hot-cold-row" id="dow-mon-hot"></div>
+              <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin:12px 0 10px;">Cold Numbers (Mon)</div>
+              <div class="hot-cold-row" id="dow-mon-cold"></div>
+            </div>
+            <div>
+              <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;">Number–Metric Correlations (Mon)</div>
+              <div id="dow-mon-corr"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wednesday panel -->
+        <div class="dow-panel" id="dow-wed">
+          <div class="dow-overview-grid" id="dow-wed-overview"></div>
+          <div class="grid-2" style="gap:16px;">
+            <div>
+              <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;">Hot Numbers (Wed)</div>
+              <div class="hot-cold-row" id="dow-wed-hot"></div>
+              <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin:12px 0 10px;">Cold Numbers (Wed)</div>
+              <div class="hot-cold-row" id="dow-wed-cold"></div>
+            </div>
+            <div>
+              <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;">Number–Metric Correlations (Wed)</div>
+              <div id="dow-wed-corr"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Saturday panel -->
+        <div class="dow-panel" id="dow-sat">
+          <div class="dow-overview-grid" id="dow-sat-overview"></div>
+          <div class="grid-2" style="gap:16px;">
+            <div>
+              <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;">Hot Numbers (Sat)</div>
+              <div class="hot-cold-row" id="dow-sat-hot"></div>
+              <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin:12px 0 10px;">Cold Numbers (Sat)</div>
+              <div class="hot-cold-row" id="dow-sat-cold"></div>
+            </div>
+            <div>
+              <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;">Number–Metric Correlations (Sat)</div>
+              <div id="dow-sat-corr"></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- History -->
@@ -1867,11 +2129,11 @@ function renderHeatmaps(wFreq, rFreq, total) {
   for (let n = 1; n <= 69; n++) {
     const c = wFreq[n];
     const intensity = (c - wMin) / (wMax - wMin);
-    const r = Math.round(20 + intensity * 100);
-    const g = Math.round(20 + intensity * 40);
-    const b = Math.round(15 + intensity * 10);
+    const r = Math.round(255);
+    const g = Math.round(235 - intensity * 185);
+    const b = Math.round(230 - intensity * 210);
     const bg = `rgb(${r},${g},${b})`;
-    const textColor = intensity > 0.5 ? '#faf9f5' : '#8a8885';
+    const textColor = intensity > 0.5 ? '#fff' : '#7a2010';
 
     const div = document.createElement('div');
     div.className = 'grid-num';
@@ -1890,11 +2152,11 @@ function renderHeatmaps(wFreq, rFreq, total) {
   for (let n = 1; n <= 26; n++) {
     const c = rFreq[n];
     const intensity = (c - rMin) / (rMax - rMin);
-    const r = Math.round(50 + intensity * 142);
-    const g = Math.round(15 + intensity * 30);
-    const b = Math.round(15);
+    const r = Math.round(255);
+    const g = Math.round(220 - intensity * 185);
+    const b = Math.round(215 - intensity * 205);
     const bg = `rgb(${r},${g},${b})`;
-    const textColor = intensity > 0.45 ? '#faf9f5' : '#b0aea5';
+    const textColor = intensity > 0.45 ? '#fff' : '#7a2010';
 
     const div = document.createElement('div');
     div.className = 'grid-num';
@@ -1982,6 +2244,453 @@ function renderInsights(wFreq, rFreq, sums, total) {
     `;
     grid.appendChild(div);
   });
+}
+
+/* ═══════════════════════════════════════════════
+   1ST-LEVEL PATTERN ENGINE
+   ═══════════════════════════════════════════════ */
+
+/** Compute all 1st-level metrics for a single draw */
+function computeDrawMetrics(d) {
+  const ws = [d[1],d[2],d[3],d[4],d[5]].sort((a,b)=>a-b);
+  const sum   = ws.reduce((a,b)=>a+b, 0);
+  const odds  = ws.filter(n=>n%2!==0).length;
+  const evens = 5 - odds;
+  const high  = ws.filter(n=>n>34).length;   // >34 = high half
+  const low   = 5 - high;
+  let consec  = 0;
+  for (let i=0;i<ws.length-1;i++) if (ws[i+1]-ws[i]===1) consec++;
+  const digitSum = ws.reduce((a,n)=>a + String(n).split('').reduce((x,c)=>x+Number(c),0), 0);
+  const spread = ws[4] - ws[0];
+  return { sum, odds, evens, high, low, consec, digitSum, spread, ws };
+}
+
+/** Aggregate metrics over an array of draws */
+function aggregateMetrics(draws) {
+  const n = draws.length;
+  if (!n) return null;
+
+  let sumTotal=0, oddsTotal=0, highTotal=0, consecTotal=0,
+      digitSumTotal=0, spreadTotal=0;
+  let sumDist={}, oddsDist={}, highDist={}, consecDist={};
+
+  draws.forEach(d => {
+    const m = computeDrawMetrics(d);
+    sumTotal += m.sum;
+    oddsTotal += m.odds;
+    highTotal += m.high;
+    consecTotal += m.consec;
+    digitSumTotal += m.digitSum;
+    spreadTotal += m.spread;
+    sumDist[m.sum] = (sumDist[m.sum]||0)+1;
+    oddsDist[m.odds] = (oddsDist[m.odds]||0)+1;
+    highDist[m.high] = (highDist[m.high]||0)+1;
+    consecDist[m.consec] = (consecDist[m.consec]||0)+1;
+  });
+
+  const avgSum      = +(sumTotal/n).toFixed(1);
+  const avgOdds     = +(oddsTotal/n).toFixed(2);
+  const avgHigh     = +(highTotal/n).toFixed(2);
+  const avgConsec   = +(consecTotal/n).toFixed(2);
+  const avgDigitSum = +(digitSumTotal/n).toFixed(1);
+  const avgSpread   = +(spreadTotal/n).toFixed(1);
+
+  // Most common odd/even combos
+  const modeOdds  = Object.entries(oddsDist).sort((a,b)=>b[1]-a[1])[0];
+  const modeHigh  = Object.entries(highDist).sort((a,b)=>b[1]-a[1])[0];
+  const modeConsec= Object.entries(consecDist).sort((a,b)=>b[1]-a[1])[0];
+
+  return {
+    n, avgSum, avgOdds, avgHigh, avgConsec, avgDigitSum, avgSpread,
+    modeOdds, modeHigh, modeConsec,
+    oddsDist, highDist, consecDist, sumDist
+  };
+}
+
+/** Compute white-ball frequency for a subset of draws */
+function freqForDraws(draws) {
+  const freq = new Array(70).fill(0);
+  draws.forEach(d => [d[1],d[2],d[3],d[4],d[5]].forEach(n=>freq[n]++));
+  return freq;
+}
+
+/** Pearson correlation coefficient between two equal-length arrays */
+function pearson(xs, ys) {
+  const n = xs.length;
+  if (!n) return 0;
+  const mx = xs.reduce((a,b)=>a+b,0)/n;
+  const my = ys.reduce((a,b)=>a+b,0)/n;
+  let num=0, dx2=0, dy2=0;
+  for (let i=0;i<n;i++) {
+    const dx = xs[i]-mx, dy = ys[i]-my;
+    num += dx*dy; dx2 += dx*dx; dy2 += dy*dy;
+  }
+  const denom = Math.sqrt(dx2*dy2);
+  return denom < 1e-9 ? 0 : +(num/denom).toFixed(3);
+}
+
+/**
+ * For each white ball 1–69, compute correlation between
+ * "did this ball appear in this draw?" (0/1) and each 1st-level metric.
+ * Returns top N by |r| for the given metric.
+ */
+function ballMetricCorrelations(draws, metricKey, topN=10) {
+  const n = draws.length;
+  const metricVals = draws.map(d => computeDrawMetrics(d)[metricKey]);
+
+  const results = [];
+  for (let ball=1; ball<=69; ball++) {
+    const appears = draws.map(d => [d[1],d[2],d[3],d[4],d[5]].includes(ball) ? 1 : 0);
+    const r = pearson(appears, metricVals);
+    const freq = appears.reduce((a,b)=>a+b,0);
+    results.push({ ball, r, freq });
+  }
+  return results.sort((a,b) => Math.abs(b.r)-Math.abs(a.r)).slice(0, topN);
+}
+
+/* ═══════════════════════════════════════════════
+   RENDER: 1ST-LEVEL PATTERN SECTION
+   ═══════════════════════════════════════════════ */
+function renderFirstLevelPatterns() {
+  // -- Latest draw strip --
+  const d = RAW_DRAWS[0];
+  const m = computeDrawMetrics(d);
+  document.getElementById('latest-metrics-date').textContent = d[0];
+
+  const ballsEl = document.getElementById('latest-metrics-balls');
+  ballsEl.innerHTML = '';
+  m.ws.forEach(n => {
+    const b = document.createElement('div');
+    b.className = 'ball white'; b.textContent = n;
+    ballsEl.appendChild(b);
+  });
+  const sep = document.createElement('div');
+  sep.className = 'ball-sep'; sep.textContent = '+';
+  ballsEl.appendChild(sep);
+  const pb = document.createElement('div');
+  pb.className = 'ball red'; pb.textContent = d[6];
+  ballsEl.appendChild(pb);
+
+  const strip = document.getElementById('latest-metrics-strip');
+  strip.innerHTML = '';
+  [
+    { label: 'Sum', val: m.sum },
+    { label: 'Odd / Even', val: `${m.odds} / ${m.evens}` },
+    { label: 'High / Low', val: `${m.high} / ${m.low}` },
+    { label: 'Consec Pairs', val: m.consec },
+    { label: 'Digit Sum', val: m.digitSum },
+    { label: 'Spread', val: m.spread },
+  ].forEach(({label,val}) => {
+    const el = document.createElement('div');
+    el.className = 'draw-metric';
+    el.innerHTML = `<div class="dm-label">${label}</div><div class="dm-val">${val}</div>`;
+    strip.appendChild(el);
+  });
+
+  // -- Aggregate all draws --
+  const agg = aggregateMetrics(RAW_DRAWS);
+
+  const totalDraws = RAW_DRAWS.length;
+
+  // Percentage of draws with at least 1 consecutive pair
+  const withConsec = RAW_DRAWS.filter(d=>{
+    const ws=[d[1],d[2],d[3],d[4],d[5]].sort((a,b)=>a-b);
+    for(let i=0;i<ws.length-1;i++) if(ws[i+1]-ws[i]===1) return true;
+    return false;
+  }).length;
+
+  const grid = document.getElementById('pattern-metrics-grid');
+  grid.innerHTML = '';
+
+  const cards = [
+    {
+      icon:'➕', color:'rgba(217,119,87,0.15)',
+      title:'White Ball Sum',
+      rows:[
+        { k:'Average sum', v: agg.avgSum },
+        { k:'Theoretical mean', v: '175.0' },
+        { k:'Most common range', v: getMostCommonSumRange(RAW_DRAWS) },
+        { k:'Min / Max observed', v: `${getMinMax(RAW_DRAWS,'sum').min} / ${getMinMax(RAW_DRAWS,'sum').max}` },
+      ]
+    },
+    {
+      icon:'⚖️', color:'rgba(160,120,32,0.15)',
+      title:'Odd / Even Split',
+      rows:[
+        { k:'Avg odds per draw', v: agg.avgOdds },
+        { k:'Most common split', v: `${agg.modeOdds[0]} odd / ${5-Number(agg.modeOdds[0])} even (${((agg.modeOdds[1]/totalDraws)*100).toFixed(1)}%)` },
+        { k:'3-odd / 2-even rate', v: `${pct(RAW_DRAWS.filter(d=>computeDrawMetrics(d).odds===3).length, totalDraws)}%` },
+        { k:'All-odd / all-even', v: `${pct(RAW_DRAWS.filter(d=>computeDrawMetrics(d).odds===5).length,totalDraws)}% / ${pct(RAW_DRAWS.filter(d=>computeDrawMetrics(d).evens===5).length,totalDraws)}%` },
+      ]
+    },
+    {
+      icon:'🔼', color:'rgba(106,155,204,0.15)',
+      title:'High / Low Split (≤34 vs >34)',
+      rows:[
+        { k:'Avg high per draw', v: agg.avgHigh },
+        { k:'Most common split', v: `${agg.modeHigh[0]} high / ${5-Number(agg.modeHigh[0])} low (${((agg.modeHigh[1]/totalDraws)*100).toFixed(1)}%)` },
+        { k:'3-high / 2-low rate', v: `${pct(RAW_DRAWS.filter(d=>computeDrawMetrics(d).high===3).length,totalDraws)}%` },
+        { k:'All-high / all-low', v: `${pct(RAW_DRAWS.filter(d=>computeDrawMetrics(d).high===5).length,totalDraws)}% / ${pct(RAW_DRAWS.filter(d=>computeDrawMetrics(d).low===5).length,totalDraws)}%` },
+      ]
+    },
+    {
+      icon:'🔗', color:'rgba(90,122,69,0.15)',
+      title:'Consecutive Pairs',
+      rows:[
+        { k:'Avg pairs per draw', v: agg.avgConsec },
+        { k:'Draws with ≥1 pair', v: `${pct(withConsec,totalDraws)}%` },
+        { k:'Draws with 0 pairs', v: `${pct(totalDraws-withConsec,totalDraws)}%` },
+        { k:'Most common count', v: `${agg.modeConsec[0]} pair(s) (${((agg.modeConsec[1]/totalDraws)*100).toFixed(1)}%)` },
+      ]
+    },
+    {
+      icon:'🔢', color:'rgba(160,120,32,0.15)',
+      title:'Digit Sum',
+      rows:[
+        { k:'Average digit sum', v: agg.avgDigitSum },
+        { k:'Min / Max observed', v: `${getMinMax(RAW_DRAWS,'digitSum').min} / ${getMinMax(RAW_DRAWS,'digitSum').max}` },
+        { k:'Most common range', v: getMostCommonDigitSumRange(RAW_DRAWS) },
+      ]
+    },
+    {
+      icon:'↔️', color:'rgba(106,155,204,0.15)',
+      title:'Range Spread (max − min)',
+      rows:[
+        { k:'Average spread', v: agg.avgSpread },
+        { k:'Min / Max spread', v: `${getMinMax(RAW_DRAWS,'spread').min} / ${getMinMax(RAW_DRAWS,'spread').max}` },
+        { k:'Spread > 50 rate', v: `${pct(RAW_DRAWS.filter(d=>computeDrawMetrics(d).spread>50).length,totalDraws)}%` },
+        { k:'Spread < 30 rate', v: `${pct(RAW_DRAWS.filter(d=>computeDrawMetrics(d).spread<30).length,totalDraws)}%` },
+      ]
+    },
+  ];
+
+  cards.forEach(card => {
+    const el = document.createElement('div');
+    el.className = 'pm-card';
+    el.innerHTML = `
+      <div class="pm-card-title">
+        <div class="pm-icon" style="background:${card.color}">${card.icon}</div>
+        ${card.title}
+      </div>
+      ${card.rows.map(r=>`
+        <div class="pm-stat-row">
+          <span class="pm-key">${r.k}</span>
+          <span class="pm-val">${r.v}</span>
+        </div>
+      `).join('')}
+    `;
+    grid.appendChild(el);
+  });
+}
+
+/* helpers */
+function pct(count, total) { return (count/total*100).toFixed(1); }
+function getMinMax(draws, key) {
+  let min=Infinity, max=-Infinity;
+  draws.forEach(d=>{ const v=computeDrawMetrics(d)[key]; if(v<min)min=v; if(v>max)max=v; });
+  return { min, max };
+}
+function getMostCommonSumRange(draws) {
+  const buckets = {};
+  draws.forEach(d => {
+    const s = computeDrawMetrics(d).sum;
+    const b = Math.floor(s/20)*20;
+    buckets[b] = (buckets[b]||0)+1;
+  });
+  const top = Object.entries(buckets).sort((a,b)=>b[1]-a[1])[0];
+  return `${top[0]}–${Number(top[0])+19}`;
+}
+function getMostCommonDigitSumRange(draws) {
+  const buckets = {};
+  draws.forEach(d => {
+    const s = computeDrawMetrics(d).digitSum;
+    const b = Math.floor(s/5)*5;
+    buckets[b] = (buckets[b]||0)+1;
+  });
+  const top = Object.entries(buckets).sort((a,b)=>b[1]-a[1])[0];
+  return `${top[0]}–${Number(top[0])+4}`;
+}
+
+/* ═══════════════════════════════════════════════
+   RENDER: 2ND-LEVEL DOW CORRELATION
+   ═══════════════════════════════════════════════ */
+function renderDayOfWeekAnalysis() {
+  const days = {
+    mon: { label:'Monday',    tag:'mon', key:'Mon' },
+    wed: { label:'Wednesday', tag:'wed', key:'Wed' },
+    sat: { label:'Saturday',  tag:'sat', key:'Sat' },
+  };
+
+  // Split draws by day
+  const byDay = { mon:[], wed:[], sat:[] };
+  RAW_DRAWS.forEach(d => {
+    const day = d[0].slice(0,3); // "Mon","Wed","Sat"
+    if (day==='Mon') byDay.mon.push(d);
+    else if (day==='Wed') byDay.wed.push(d);
+    else if (day==='Sat') byDay.sat.push(d);
+  });
+
+  // --- Comparison table ---
+  const metrics = [
+    { key:'sum',      label:'Avg Sum',          fmt: v=>`${v}` },
+    { key:'odds',     label:'Avg Odds',          fmt: v=>`${v} odd` },
+    { key:'high',     label:'Avg High (>34)',    fmt: v=>`${v}` },
+    { key:'consec',   label:'Avg Consec Pairs',  fmt: v=>`${v}` },
+    { key:'digitSum', label:'Avg Digit Sum',     fmt: v=>`${v}` },
+    { key:'spread',   label:'Avg Spread',        fmt: v=>`${v}` },
+  ];
+
+  const allAgg   = aggregateMetrics(RAW_DRAWS);
+  const aggByDay = { mon: aggregateMetrics(byDay.mon), wed: aggregateMetrics(byDay.wed), sat: aggregateMetrics(byDay.sat) };
+
+  const aggKey = { sum:'avgSum', odds:'avgOdds', high:'avgHigh', consec:'avgConsec', digitSum:'avgDigitSum', spread:'avgSpread' };
+
+  const tbody = document.getElementById('day-compare-tbody');
+  tbody.innerHTML = '';
+  metrics.forEach(({key,label,fmt}) => {
+    const monV = aggByDay.mon[aggKey[key]];
+    const wedV = aggByDay.wed[aggKey[key]];
+    const satV = aggByDay.sat[aggKey[key]];
+    const allV = allAgg[aggKey[key]];
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-weight:600;">${label}</td>
+      <td>${fmt(monV)} ${diffPill(monV, allV)}</td>
+      <td>${fmt(wedV)} ${diffPill(wedV, allV)}</td>
+      <td>${fmt(satV)} ${diffPill(satV, allV)}</td>
+      <td style="color:var(--subtle);font-family:'DM Mono',monospace;font-size:12px">${fmt(allV)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // --- Per-day panels ---
+  Object.entries(byDay).forEach(([dayKey, draws]) => {
+    const agg  = aggByDay[dayKey];
+    const freq = freqForDraws(draws);
+    const sorted = Array.from({length:69},(_,i)=>({n:i+1,c:freq[i+1]})).sort((a,b)=>b.c-a.c);
+    const hot5  = sorted.slice(0,8);
+    const cold5 = sorted.filter(x=>x.c>0).slice(-8).reverse();
+
+    // Overview stats
+    const ovEl = document.getElementById(`dow-${dayKey}-overview`);
+    ovEl.innerHTML = '';
+    [
+      { label:'Total Draws', val: draws.length },
+      { label:'Avg Sum',     val: agg.avgSum, sub:'(all: '+allAgg.avgSum+')' },
+      { label:'Avg Odds',    val: agg.avgOdds+' odd', sub:'(all: '+allAgg.avgOdds+')' },
+      { label:'Avg High',    val: agg.avgHigh+' high', sub:'(all: '+allAgg.avgHigh+')' },
+      { label:'Avg Spread',  val: agg.avgSpread, sub:'(all: '+allAgg.avgSpread+')' },
+      { label:'Consec≥1',   val: pct(draws.filter(d=>{const ws=[d[1],d[2],d[3],d[4],d[5]].sort((a,b)=>a-b);for(let i=0;i<4;i++)if(ws[i+1]-ws[i]===1)return true;return false;}).length,draws.length)+'%', sub:'draws w/ consec pair' },
+    ].forEach(({label,val,sub}) => {
+      const el = document.createElement('div');
+      el.className = 'dow-stat-card';
+      el.innerHTML = `<div class="dsc-label">${label}</div><div class="dsc-val">${val}</div>${sub?`<div class="dsc-sub">${sub}</div>`:''}`;
+      ovEl.appendChild(el);
+    });
+
+    // Hot balls
+    const hotEl = document.getElementById(`dow-${dayKey}-hot`);
+    hotEl.innerHTML = '';
+    hot5.forEach(({n,c}) => {
+      const el = document.createElement('div');
+      el.className = 'hot-ball';
+      el.title = `Ball ${n}: drawn ${c}× on ${days[dayKey].label}`;
+      el.textContent = n;
+      hotEl.appendChild(el);
+    });
+
+    // Cold balls
+    const coldEl = document.getElementById(`dow-${dayKey}-cold`);
+    coldEl.innerHTML = '';
+    cold5.forEach(({n,c}) => {
+      const el = document.createElement('div');
+      el.className = 'cold-ball';
+      el.title = `Ball ${n}: drawn ${c}× on ${days[dayKey].label}`;
+      el.textContent = n;
+      coldEl.appendChild(el);
+    });
+
+    // Correlations – top by |r| for 'sum' as key metric, then show all metrics for top balls
+    const corrEl = document.getElementById(`dow-${dayKey}-corr`);
+    corrEl.innerHTML = '';
+
+    // Compute correlations for the 4 most interesting metrics
+    const corrMetrics = [
+      { key:'sum',      label:'Sum' },
+      { key:'spread',   label:'Spread' },
+      { key:'odds',     label:'# Odd' },
+      { key:'digitSum', label:'Digit Sum' },
+    ];
+
+    // For each metric show top 5 correlating balls
+    const table = document.createElement('table');
+    table.className = 'corr-table';
+    table.innerHTML = `<thead><tr>
+      <th>Ball</th>
+      <th>Metric</th>
+      <th style="width:120px">r</th>
+      <th>Strength</th>
+    </tr></thead>`;
+    const tbod = document.createElement('tbody');
+
+    // Gather top corr balls across metrics
+    const allCorr = [];
+    corrMetrics.forEach(({key,label}) => {
+      const top = ballMetricCorrelations(draws, key, 5);
+      top.forEach(({ball,r,freq}) => allCorr.push({ball,r,freq,metric:label}));
+    });
+    // Sort by |r| desc
+    allCorr.sort((a,b)=>Math.abs(b.r)-Math.abs(a.r));
+
+    // Dedupe by ball+metric, show top 12
+    const seen = new Set();
+    const shown = allCorr.filter(x=>{
+      const k=`${x.ball}-${x.metric}`;
+      if(seen.has(k)) return false;
+      seen.add(k); return true;
+    }).slice(0,12);
+
+    shown.forEach(({ball,r,freq,metric}) => {
+      const tr = document.createElement('tr');
+      const barW = Math.round(Math.abs(r)*80);
+      const barColor = r > 0 ? 'var(--orange)' : 'var(--blue)';
+      const cls = r > 0.15 ? 'corr-strong-pos' : r > 0.05 ? 'corr-weak-pos' : r < -0.15 ? 'corr-strong-neg' : r < -0.05 ? 'corr-weak-neg' : 'corr-neutral';
+      const strength = Math.abs(r) > 0.15 ? 'Strong' : Math.abs(r) > 0.05 ? 'Weak' : 'None';
+      tr.innerHTML = `
+        <td><div class="freq-ball white" style="width:26px;height:26px;font-size:10px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:var(--text);color:#fff">${ball}</div></td>
+        <td style="color:var(--muted)">${metric}</td>
+        <td>
+          <span class="corr-val ${r>=0?'corr-pos':'corr-neg'}">${r>=0?'+':''}${r}</span>
+          <div class="dist-bar-wrap" style="margin-left:6px;vertical-align:middle">
+            <div class="dist-bar-fill" style="width:${barW}%;background:${barColor}"></div>
+          </div>
+        </td>
+        <td><span class="corr-label ${cls}">${strength}</span></td>
+      `;
+      tbod.appendChild(tr);
+    });
+    table.appendChild(tbod);
+    corrEl.appendChild(table);
+  });
+}
+
+function diffPill(val, avg) {
+  const diff = +(val - avg).toFixed(2);
+  if (Math.abs(diff) < 0.3) return '';
+  const cls = diff > 0 ? 'corr-weak-pos' : 'corr-weak-neg';
+  return `<span class="corr-label ${cls}" style="font-size:10px;margin-left:4px">${diff>0?'+':''}${diff}</span>`;
+}
+
+/* ═══════════════════════════════════════════════
+   DOW TAB SWITCHER
+   ═══════════════════════════════════════════════ */
+function switchDowTab(name) {
+  document.querySelectorAll('.dow-tab').forEach(b => {
+    b.classList.toggle('active', b.dataset.day === name);
+  });
+  document.querySelectorAll('.dow-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(`dow-${name}`).classList.add('active');
 }
 
 function renderHistory(draws) {
@@ -2103,6 +2812,8 @@ function init() {
   renderGapCharts(wFreq, rFreq, RAW_DRAWS.length);
   renderHeatmaps(wFreq, rFreq, RAW_DRAWS.length);
   renderInsights(wFreq, rFreq, sums, RAW_DRAWS.length);
+  renderFirstLevelPatterns();
+  renderDayOfWeekAnalysis();
   renderHistory(RAW_DRAWS);
   updateLastUpdated();
 
