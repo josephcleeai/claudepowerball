@@ -662,7 +662,20 @@
   .draw-btn:active:not(:disabled) { transform: translateY(0); box-shadow: 0 3px 10px rgba(192,57,43,0.32); }
   .draw-btn:focus-visible { outline: 3px solid var(--text); outline-offset: 3px; }
   .draw-btn:disabled { opacity: 0.72; cursor: progress; transform: none; }
-  .draw-btn-icon { font-size: 24px; line-height: 1; }
+  /* White lottery ball marked "10". White sits at 5.4:1 against the red button
+     so the ball reads on its own without a ring; the deeper red numerals give
+     8.8:1 on the ball, which small bold type needs. */
+  .draw-btn-icon {
+    width: 34px; height: 34px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    background: #ffffff;
+    color: #8c2519;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px; font-weight: 700; line-height: 1;
+    letter-spacing: -0.5px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.28), inset 0 -3px 6px rgba(0,0,0,0.13);
+  }
   .draw-btn.is-drawing .draw-btn-icon { animation: tumble 0.5s cubic-bezier(0.4,0,0.2,1) infinite; }
   @keyframes tumble {
     0%   { transform: rotate(0deg)   scale(1); }
@@ -690,6 +703,16 @@
   }
   .draw-odds-chip .doc-label { font-size: 10px; font-weight: 700; letter-spacing: 0.7px; text-transform: uppercase; color: var(--subtle); }
   .draw-odds-chip .doc-val { font-size: 14px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--text); }
+
+  .draw-constraints {
+    margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);
+    font-size: 12px; color: var(--muted); line-height: 1.6;
+  }
+  .draw-constraints strong { color: var(--text); font-family: 'DM Mono', monospace; font-weight: 500; }
+  .draw-constraints .dc-rule { display: block; }
+
+  .ticket-tag.target { background: rgba(106,155,204,0.16); color: var(--blue); }
+  .ticket-tag.relaxed { background: rgba(217,119,87,0.16); color: var(--orange-dk); }
 
   .draw-status { font-size: 12.5px; color: var(--muted); font-style: italic; margin: 14px 0 0; min-height: 18px; }
 
@@ -1034,7 +1057,7 @@
       <div class="draw-panel">
         <div class="draw-cta">
           <button id="draw-btn" class="draw-btn" type="button" onclick="drawTickets()" aria-controls="ticket-grid">
-            <span class="draw-btn-icon" aria-hidden="true">🎲</span>
+            <span class="draw-btn-icon" aria-hidden="true">10</span>
             <span id="draw-btn-label">Draw 10 Tickets</span>
           </button>
           <div class="draw-modes" role="radiogroup" aria-label="Number weighting method" id="draw-modes"></div>
@@ -1049,6 +1072,7 @@
             <span class="doc-label">Jackpot odds per ticket</span>
             <span class="doc-val" id="draw-odds">1 in 292,201,338</span>
           </div>
+          <div class="draw-constraints" id="draw-constraints"></div>
         </div>
       </div>
 
@@ -3342,15 +3366,25 @@ function getMinMax(draws, key) {
   draws.forEach(d=>{ const v=computeDrawMetrics(d)[key]; if(v<min)min=v; if(v>max)max=v; });
   return { min, max };
 }
-function getMostCommonSumRange(draws) {
+/* Widest-supported 20-wide sum bucket, as numeric bounds. Returns null when
+   there is no data so callers can pick their own fallback. */
+function computeMostCommonSumBucket(sums, width = 20) {
+  if (!sums || !sums.length) return null;
   const buckets = {};
-  draws.forEach(d => {
-    const s = computeDrawMetrics(d).sum;
-    const b = Math.floor(s/20)*20;
-    buckets[b] = (buckets[b]||0)+1;
-  });
-  const top = Object.entries(buckets).sort((a,b)=>b[1]-a[1])[0];
-  return `${top[0]}–${Number(top[0])+19}`;
+  for (const s of sums) {
+    const b = Math.floor(s / width) * width;
+    buckets[b] = (buckets[b] || 0) + 1;
+  }
+  // Sort by count desc, then by lower bound asc, so ties resolve deterministically.
+  const top = Object.entries(buckets)
+    .map(([lo, count]) => [Number(lo), count])
+    .sort((a, b) => b[1] - a[1] || a[0] - b[0])[0];
+  return { lo: top[0], hi: top[0] + width - 1, count: top[1], width };
+}
+
+function getMostCommonSumRange(draws) {
+  const bucket = computeMostCommonSumBucket(draws.map(d => computeDrawMetrics(d).sum));
+  return bucket ? `${bucket.lo}–${bucket.hi}` : '—';
 }
 function getMostCommonDigitSumRange(draws) {
   const buckets = {};
@@ -3671,8 +3705,75 @@ const DRAW_MODES = [
   { id: 'cold',     label: 'Least-drawn',        blurb: 'leans toward numbers drawn less often' }
 ];
 
-/* Small seedable PRNG. Production draws use Math.random; the tests pass a seed
-   so generator behaviour is reproducible. */
+/* Tiered selection rules. Every count and pool size lives here — changing the
+   shape of the draw should never require touching the algorithm below.
+   counts and pools are parallel arrays: tier i draws counts[i] balls from the
+   top pools[i] most frequent white balls. Pools are cumulative slices of one
+   ranking, so tier 2's pool contains tier 1's. */
+const TIER_CONFIG = {
+  powerballPool: 10,
+  counts: [2, 1, 1, 1],
+  pools:  [10, 23, 46, WHITE_MAX],
+  maxAttempts: 300,
+  sumRelaxWidth: 20
+};
+
+/* Ranks 1..size by frequency descending, then by number ascending.
+   The explicit number tie-break matters: frequency ties straddle the rank-23
+   and rank-46 cutoffs in real data, so without it tier membership would depend
+   on engine sort behaviour. */
+function rankByFrequency(freq, size) {
+  const entries = [];
+  for (let n = 1; n <= size; n++) entries.push([n, freq[n] || 0]);
+  entries.sort((a, b) => b[1] - a[1] || a[0] - b[0]);
+  return entries.map(e => e[0]);
+}
+
+/* Cumulative top-N slice of a ranking, clamped to the ranking's length. */
+function topSlice(ranked, n) {
+  return ranked.slice(0, Math.max(0, Math.min(n, ranked.length)));
+}
+
+/* Picks one number from an explicit pool, honouring mode weights and skipping
+   anything already used. Returns -1 when the pool is exhausted. */
+function weightedPickFromPool(pool, weights, rng, used) {
+  let total = 0;
+  for (const n of pool) {
+    if (used && used.has(n)) continue;
+    total += weights[n] || 0;
+  }
+  if (total <= 0) {
+    // All remaining candidates carry zero weight — fall back to uniform so the
+    // tier can still be filled rather than aborting the ticket.
+    const avail = pool.filter(n => !used || !used.has(n));
+    return avail.length ? avail[Math.floor(rng() * avail.length)] : -1;
+  }
+  let r = rng() * total;
+  for (const n of pool) {
+    if (used && used.has(n)) continue;
+    r -= weights[n] || 0;
+    if (r <= 0) return n;
+  }
+  for (let i = pool.length - 1; i >= 0; i--) {
+    if (!used || !used.has(pool[i])) return pool[i];
+  }
+  return -1;
+}
+
+/* Resolves the parity target for one Powerball number.
+   Uses that number's dominant white-ball parity pattern. The rules only define
+   behaviour for 2O/3E and 3O/2E, so anything else falls back to whichever of
+   those two is more common for that number. */
+function resolveParityTarget(parityCounts) {
+  let dominant = 0;
+  for (let i = 1; i < 6; i++) if (parityCounts[i] > parityCounts[dominant]) dominant = i;
+  if (dominant === 2 || dominant === 3) {
+    return { target: dominant, fallback: false };
+  }
+  return { target: parityCounts[3] > parityCounts[2] ? 3 : 2, fallback: true };
+}
+
+
 function mulberry32(seed) {
   let a = seed >>> 0;
   return function () {
@@ -3752,41 +3853,57 @@ function sampleDistinct(weights, k, rng) {
   return [...chosen].sort((a, b) => a - b);
 }
 
-/* Precomputes everything the generator samples against, from the live dataset. */
+/* Precomputes everything the generator samples against, from the live dataset.
+   Tier pools, per-Powerball parity targets and the sum window are all derived
+   here, so a Draw History refresh rebuilds them with no other change. */
 function buildGeneratorModel(draws) {
   const wFreq = new Array(WHITE_MAX + 1).fill(0);
   const rFreq = new Array(POWERBALL_MAX + 1).fill(0);
   const sums = [];
   const parityCounts = new Array(6).fill(0);
+  const parityByPowerball = {};
+  for (let pb = 1; pb <= POWERBALL_MAX; pb++) parityByPowerball[pb] = new Array(6).fill(0);
   const historicalWhites = new Set();
 
   for (const d of draws) {
     const whites = [d[1], d[2], d[3], d[4], d[5]];
     let sum = 0, odds = 0;
     for (const n of whites) { wFreq[n]++; sum += n; if (n % 2 !== 0) odds++; }
-    if (d[6] >= 1 && d[6] <= POWERBALL_MAX) rFreq[d[6]]++;
+    if (d[6] >= 1 && d[6] <= POWERBALL_MAX) { rFreq[d[6]]++; parityByPowerball[d[6]][odds]++; }
     sums.push(sum);
     parityCounts[odds]++;
     historicalWhites.add(whites.join('-'));
   }
 
   const total = draws.length || 1;
+
+  const rankedWhites = rankByFrequency(wFreq, WHITE_MAX);
+  const rankedPowerballs = rankByFrequency(rFreq, POWERBALL_MAX);
+
+  const tierPools = TIER_CONFIG.pools.map(n => topSlice(rankedWhites, n));
+  const powerballPool = topSlice(rankedPowerballs, TIER_CONFIG.powerballPool);
+
+  const parityTargets = {};
+  for (let pb = 1; pb <= POWERBALL_MAX; pb++) {
+    parityTargets[pb] = resolveParityTarget(parityByPowerball[pb]);
+  }
+
+  // Full 1–335 window when there is no data, so generation still succeeds.
+  const bucket = computeMostCommonSumBucket(sums);
+  const sumRange = bucket
+    ? { lo: bucket.lo, hi: bucket.hi, count: bucket.count, share: (bucket.count / total) * 100 }
+    : { lo: 15, hi: 335, count: 0, share: 0 };
+
   return {
     wFreq, rFreq, sums, historicalWhites,
     totalDraws: draws.length,
+    rankedWhites, rankedPowerballs,
+    tierPools, powerballPool,
+    parityByPowerball, parityTargets,
+    sumRange,
     parityPcts: parityCounts.map(c => (c / total) * 100),
     avgSum: sums.length ? sums.reduce((a, b) => a + b, 0) / sums.length : 0
   };
-}
-
-/* Samples an odd-ball count from the historical parity mix. */
-function sampleTargetOddCount(model, rng) {
-  let r = rng() * 100;
-  for (let i = 0; i < 6; i++) {
-    r -= model.parityPcts[i];
-    if (r <= 0) return i;
-  }
-  return 2;
 }
 
 function ticketMetrics(whites, pb) {
@@ -3804,53 +3921,100 @@ function ticketMetrics(whites, pb) {
   };
 }
 
-/* Builds one ticket. Beyond frequency weighting, candidates are shaped by
-   rejection sampling toward the parity mix and sum band the dataset actually
-   exhibits, so output looks like a plausible draw rather than a flat random
-   pick. The attempt cap guarantees termination; the closest candidate seen is
-   returned if no candidate clears both targets. */
-function generateTicket(model, mode, rng, opts = {}) {
-  const maxAttempts = opts.maxAttempts ?? 220;
-  const sumTolerance = opts.sumTolerance ?? 28;
-  const seen = opts.seen || new Set();
+/* Draws 5 white balls through the configured tiers. Numbers already used are
+   excluded from every later tier, so the cumulative pools never repeat a ball.
+   Returns ascending, or null if a tier could not be filled. */
+function drawTieredWhites(model, weights, rng) {
+  const used = new Set();
+  const order = [];
+  for (let t = 0; t < TIER_CONFIG.counts.length; t++) {
+    const pool = model.tierPools[t];
+    for (let k = 0; k < TIER_CONFIG.counts[t]; k++) {
+      const n = weightedPickFromPool(pool, weights, rng, used);
+      if (n === -1) return null;
+      used.add(n);
+      order.push({ n, tier: t });
+    }
+  }
+  return {
+    whites: order.map(o => o.n).sort((a, b) => a - b),
+    tierOf: order.reduce((acc, o) => { acc[o.n] = o.tier; return acc; }, {})
+  };
+}
 
-  const whiteWeights = opts.whiteWeights || buildSelectionWeights(model.wFreq, WHITE_MAX, mode);
+/* Builds one ticket under the tiered rules.
+
+   1. Powerball is drawn from the top-N most frequent Powerball numbers.
+   2. White balls are drawn through the frequency tiers.
+   3. Parity must match the dominant white-ball pattern for that Powerball.
+   4. Sum must fall inside the most common white-ball sum bucket.
+
+   Steps 3 and 4 cannot be enforced during sampling without biasing it, so the
+   candidate is rejected and redrawn. If the attempt budget is exhausted the
+   constraints are relaxed in a fixed order and the relaxation is reported, so a
+   ticket that does not meet the full spec is always visibly labelled. */
+function generateTicket(model, mode, rng, opts = {}) {
+  const maxAttempts = opts.maxAttempts ?? TIER_CONFIG.maxAttempts;
+  const seen = opts.seen || new Set();
+  const weights = opts.whiteWeights || buildSelectionWeights(model.wFreq, WHITE_MAX, mode);
   const redWeights = opts.redWeights || buildSelectionWeights(model.rFreq, POWERBALL_MAX, mode);
 
-  const targetOdds = sampleTargetOddCount(model, rng);
-  const targetSum = model.sums.length
-    ? model.sums[Math.floor(rng() * model.sums.length)]
-    : Math.round(model.avgSum) || 175;
+  // Step 1 — Powerball first: it determines the parity target for this ticket.
+  const pb = weightedPickFromPool(model.powerballPool, redWeights, rng, null);
+  if (pb === -1) return null;
 
-  let best = null, bestScore = Infinity;
+  const parity = model.parityTargets[pb] || { target: 3, fallback: true };
+  const targetOdds = parity.target;
+  const { lo, hi } = model.sumRange;
+  const relaxLo = lo - TIER_CONFIG.sumRelaxWidth;
+  const relaxHi = hi + TIER_CONFIG.sumRelaxWidth;
+  const midpoint = (lo + hi) / 2;
+
+  let exact = null, widened = null, parityOnly = null, best = null, bestScore = Infinity;
+  let tries = 0;
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    const whites = sampleDistinct(whiteWeights, WHITE_PICKS, rng);
-    if (whites.length < WHITE_PICKS) break;
-    const pb = weightedPick(redWeights, rng);
-    if (pb === -1) break;
+    tries++;
+    const drawn = drawTieredWhites(model, weights, rng);
+    if (!drawn) break;
 
-    const key = whites.join('-') + '|' + pb;
+    const key = drawn.whites.join('-') + '|' + pb;
     if (seen.has(key)) continue;
 
-    const m = ticketMetrics(whites, pb);
-    const sumOff = Math.abs(m.sum - targetSum);
-    const parityOff = Math.abs(m.odds - targetOdds);
-    const score = sumOff + parityOff * 12;
+    const metrics = ticketMetrics(drawn.whites, pb);
+    const candidate = { ...drawn, pb, metrics, key };
 
-    if (score < bestScore) { bestScore = score; best = { whites, pb, metrics: m, key }; }
-    if (parityOff === 0 && sumOff <= sumTolerance) break;
+    const parityOk = metrics.odds === targetOdds;
+    const sumOk = metrics.sum >= lo && metrics.sum <= hi;
+
+    if (parityOk && sumOk) { exact = candidate; break; }
+    if (parityOk && !widened && metrics.sum >= relaxLo && metrics.sum <= relaxHi) widened = candidate;
+    if (parityOk && !parityOnly) parityOnly = candidate;
+
+    const score = Math.abs(metrics.sum - midpoint) + Math.abs(metrics.odds - targetOdds) * 12;
+    if (score < bestScore) { bestScore = score; best = candidate; }
   }
 
-  if (!best) return null;
+  const chosen = exact || widened || parityOnly || best;
+  if (!chosen) return null;
+
+  const relaxation = exact ? 'none'
+    : widened ? 'sum-widened'
+    : parityOnly ? 'sum'
+    : 'sum+parity';
+
   return {
-    whites: best.whites,
-    powerball: best.pb,
-    key: best.key,
-    metrics: best.metrics,
-    matchesHistoricalWhites: model.historicalWhites.has(best.whites.join('-')),
+    whites: chosen.whites,
+    powerball: chosen.pb,
+    key: chosen.key,
+    metrics: chosen.metrics,
+    tierOf: chosen.tierOf,
+    matchesHistoricalWhites: model.historicalWhites.has(chosen.whites.join('-')),
     targetOdds,
-    targetSum
+    parityFallback: parity.fallback,
+    sumRange: { lo, hi },
+    relaxation,
+    attempts: tries
   };
 }
 
@@ -4194,12 +4358,30 @@ function setDrawMode(id) {
     `Weighting set to ${m.label} — ${m.blurb}. Press Draw to generate 10 combinations.`;
 }
 
+/* States the active rules, all derived from the live dataset. */
+function renderDrawConstraints() {
+  const el = document.getElementById('draw-constraints');
+  if (!generatorModel) { el.innerHTML = ''; return; }
+  const m = generatorModel;
+  const pools = TIER_CONFIG.pools.map((n, i) => `${TIER_CONFIG.counts[i]}\u00d7 top ${n === WHITE_MAX ? 'any remaining' : n}`);
+  el.innerHTML = `
+    <span class="dc-rule">Powerball drawn from the <strong>top ${TIER_CONFIG.powerballPool}</strong> most frequent red balls.</span>
+    <span class="dc-rule">White balls by frequency band: <strong>${pools.join(' · ')}</strong>.</span>
+    <span class="dc-rule">Odd/even split matched to the drawn Powerball's dominant pattern; white-ball sum inside <strong>${m.sumRange.lo}–${m.sumRange.hi}</strong>${m.sumRange.share ? ` (${m.sumRange.share.toFixed(1)}% of draws)` : ''}.</span>`;
+}
+
 function renderTickets(tickets) {
   const grid = document.getElementById('ticket-grid');
   document.getElementById('draw-actions').hidden = tickets.length === 0;
 
+  const relaxLabel = { 'sum-widened': 'Relaxed: sum widened', 'sum': 'Relaxed: sum', 'sum+parity': 'Relaxed: sum + parity' };
+
   grid.innerHTML = tickets.map((t, i) => {
-    const label = `Ticket ${i + 1}: white balls ${t.whites.join(', ')}, Powerball ${t.powerball}`;
+    const relaxed = t.relaxation && t.relaxation !== 'none';
+    const label = `Ticket ${i + 1}: white balls ${t.whites.join(', ')}, Powerball ${t.powerball}. `
+      + `Sum ${t.metrics.sum}, ${t.metrics.odds} odd and ${t.metrics.evens} even. `
+      + `Target pattern ${t.targetOdds} odd / ${5 - t.targetOdds} even.`
+      + (relaxed ? ` Constraints relaxed: ${t.relaxation}.` : '');
     return `
     <div class="ticket-card is-new" style="animation-delay:${i * 45}ms" role="group" aria-label="${label}">
       <div class="ticket-head">
@@ -4208,15 +4390,21 @@ function renderTickets(tickets) {
                 aria-label="Copy ticket ${i + 1}">Copy</button>
       </div>
       <div class="ticket-balls" aria-hidden="true">
-        ${t.whites.map(n => `<div class="ticket-ball white">${n}</div>`).join('')}
+        ${t.whites.map(n => {
+          const tier = t.tierOf ? t.tierOf[n] : undefined;
+          const poolName = tier === undefined ? '' : (TIER_CONFIG.pools[tier] === WHITE_MAX ? 'any remaining number' : `top ${TIER_CONFIG.pools[tier]} band`);
+          return `<div class="ticket-ball white" title="${n} — ${poolName}">${n}</div>`;
+        }).join('')}
         <div class="ticket-sep">+</div>
-        <div class="ticket-ball red">${t.powerball}</div>
+        <div class="ticket-ball red" title="Powerball ${t.powerball} — top ${TIER_CONFIG.powerballPool} band">${t.powerball}</div>
       </div>
       <div class="ticket-meta">
         <span class="ticket-tag">Sum ${t.metrics.sum}</span>
         <span class="ticket-tag">${t.metrics.odds}O / ${t.metrics.evens}E</span>
+        <span class="ticket-tag target">Target ${t.targetOdds}O / ${5 - t.targetOdds}E</span>
         <span class="ticket-tag">${t.metrics.high}H / ${t.metrics.low}L</span>
         <span class="ticket-tag">Spread ${t.metrics.spread}</span>
+        ${relaxed ? `<span class="ticket-tag relaxed">${relaxLabel[t.relaxation]}</span>` : ''}
         ${t.matchesHistoricalWhites ? '<span class="ticket-tag match">Matches a past draw</span>' : ''}
       </div>
     </div>`;
@@ -4229,9 +4417,11 @@ function renderDrawSummary(tickets) {
 
   const avg = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
   const avgSum = avg(tickets.map(t => t.metrics.sum));
-  const avgOdds = avg(tickets.map(t => t.metrics.odds));
-  const histAvgOdds = generatorModel.parityPcts.reduce((a, p, i) => a + (p / 100) * i, 0);
   const mode = DRAW_MODES.find(m => m.id === drawMode);
+  const inRange = tickets.filter(t => t.relaxation === 'none').length;
+  const relaxed = tickets.length - inRange;
+  const fallbacks = tickets.filter(t => t.parityFallback).length;
+  const r = generatorModel.sumRange;
 
   el.innerHTML = `
     <div class="insight-card">
@@ -4239,17 +4429,19 @@ function renderDrawSummary(tickets) {
       <div>
         <div class="insight-title">About this batch</div>
         <div class="insight-body">
-          Generated with <strong>${mode.label}</strong> weighting against
-          <strong>${generatorModel.totalDraws.toLocaleString()}</strong> historical drawings.
-          These 10 tickets average a white-ball sum of <strong>${avgSum.toFixed(1)}</strong>
-          (dataset average ${generatorModel.avgSum.toFixed(1)}) and
-          <strong>${avgOdds.toFixed(1)}</strong> odd balls per line
-          (dataset average ${histAvgOdds.toFixed(1)}), so they sit in the same
-          shape as real draws.
-          That resemblance is cosmetic: each line still has a
-          <strong>1 in ${TOTAL_COMBINATIONS.toLocaleString()}</strong> jackpot chance,
-          identical to any other combination. Past frequencies carry no information
-          about the next drawing.
+          Built from <strong>${generatorModel.totalDraws.toLocaleString()}</strong> historical drawings using
+          <strong>${mode.label}</strong> weighting inside each frequency band.
+          <strong>${inRange} of ${tickets.length}</strong> tickets met every rule —
+          Powerball from the top ${TIER_CONFIG.powerballPool}, white balls through the
+          ${TIER_CONFIG.pools.slice(0, -1).join('/')} bands, parity matched to the drawn Powerball,
+          and a sum inside <strong>${r.lo}–${r.hi}</strong>.
+          ${relaxed ? `${relaxed} needed a relaxed constraint and ${relaxed === 1 ? 'is' : 'are'} tagged as such. ` : ''}
+          ${fallbacks ? `${fallbacks} used the parity fallback because that Powerball's dominant pattern was not 2/3 or 3/2. ` : ''}
+          Batch average sum is <strong>${avgSum.toFixed(1)}</strong>.
+          None of this improves the odds: constraining the pool changes which combinations can
+          appear — and excludes many valid ones — while every single line still carries the same
+          <strong>1 in ${TOTAL_COMBINATIONS.toLocaleString()}</strong> jackpot chance.
+          Past frequencies carry no information about the next drawing.
         </div>
       </div>
     </div>`;
@@ -4399,6 +4591,7 @@ function recomputeAllAnalytics() {
   // Refreshed data must feed the generator too; existing tickets keep their
   // displayed numbers but the summary is re-stated against the new dataset.
   generatorModel = buildGeneratorModel(RAW_DRAWS);
+  renderDrawConstraints();
   if (currentTickets.length) renderDrawSummary(currentTickets);
 
   // Preserve any active search filter rather than resetting the user's view.
@@ -4737,6 +4930,180 @@ function runSelfTests() {
     return eq(formatTicket(t), '03 10 29 58 64  PB 07', 'formatted line');
   });
 
+  /* — tiered selection: ranking and pools — */
+  check('ranking: tier pools are the configured sizes', () => {
+    const sizes = gm.tierPools.map(p => p.length);
+    const want = TIER_CONFIG.pools.map(n => Math.min(n, WHITE_MAX));
+    return JSON.stringify(sizes) === JSON.stringify(want) ? true : `got ${sizes}`;
+  });
+  check('ranking: Powerball pool is the top 10', () =>
+    eq(gm.powerballPool.length, TIER_CONFIG.powerballPool, 'powerball pool size'));
+  check('ranking: pools are cumulative subsets', () => {
+    for (let i = 1; i < gm.tierPools.length; i++) {
+      const outer = new Set(gm.tierPools[i]);
+      for (const n of gm.tierPools[i - 1]) if (!outer.has(n)) return `tier ${i - 1} not inside tier ${i}`;
+    }
+    return true;
+  });
+  check('ranking: pool members are ordered by descending frequency', () => {
+    const p = gm.tierPools[1];
+    for (let i = 1; i < p.length; i++) if (gm.wFreq[p[i]] > gm.wFreq[p[i - 1]]) return `out of order at ${p[i]}`;
+    return true;
+  });
+  check('ranking: frequency ties break to the lower number', () => {
+    const freq = new Array(70).fill(0);
+    freq[40] = 5; freq[9] = 5; freq[22] = 5; freq[3] = 9;
+    const ranked = rankByFrequency(freq, WHITE_MAX);
+    return JSON.stringify(ranked.slice(0, 4)) === JSON.stringify([3, 9, 22, 40])
+      ? true : `got ${ranked.slice(0, 4)}`;
+  });
+  check('ranking: real cutoffs contain ties, and slicing stays stable', () => {
+    // Ranks 23/24 and 46/47 share frequencies in the live data.
+    const a = buildGeneratorModel(RAW_DRAWS).tierPools.map(p => p.join(','));
+    const b = buildGeneratorModel(RAW_DRAWS).tierPools.map(p => p.join(','));
+    return a.join('|') === b.join('|') ? true : 'pool membership not reproducible';
+  });
+
+  /* — tiered selection: the drawn numbers obey the bands — */
+  const tieredBatch = generateTickets(gm, 60, 'weighted', seeded());
+
+  check('tiers: Powerball always comes from the top 10', () => {
+    const pool = new Set(gm.powerballPool);
+    for (const t of tieredBatch) if (!pool.has(t.powerball)) return `PB ${t.powerball} outside pool`;
+    return true;
+  });
+  check('tiers: each ticket fills the configured 2/1/1/1 shape', () => {
+    for (const t of tieredBatch) {
+      const counts = new Array(TIER_CONFIG.counts.length).fill(0);
+      for (const n of t.whites) counts[t.tierOf[n]]++;
+      if (JSON.stringify(counts) !== JSON.stringify(TIER_CONFIG.counts)) return `got ${counts}`;
+    }
+    return true;
+  });
+  check('tiers: the first two balls come from the top 10 band', () => {
+    const pool = new Set(gm.tierPools[0]);
+    for (const t of tieredBatch) {
+      const tier0 = t.whites.filter(n => t.tierOf[n] === 0);
+      if (tier0.length !== 2) return `${tier0.length} balls in tier 0`;
+      if (tier0.some(n => !pool.has(n))) return `${tier0} outside top 10`;
+    }
+    return true;
+  });
+  check('tiers: the third ball comes from the top 23 band', () => {
+    const pool = new Set(gm.tierPools[1]);
+    for (const t of tieredBatch) {
+      const b = t.whites.filter(n => t.tierOf[n] === 1);
+      if (b.length !== 1 || !pool.has(b[0])) return `${b} outside top 23`;
+    }
+    return true;
+  });
+  check('tiers: the fourth ball comes from the top 46 band', () => {
+    const pool = new Set(gm.tierPools[2]);
+    for (const t of tieredBatch) {
+      const b = t.whites.filter(n => t.tierOf[n] === 2);
+      if (b.length !== 1 || !pool.has(b[0])) return `${b} outside top 46`;
+    }
+    return true;
+  });
+  check('tiers: the final ball is unrestricted (some fall outside the top 46)', () => {
+    const top46 = new Set(gm.tierPools[2]);
+    let outside = 0;
+    for (const t of tieredBatch) {
+      const b = t.whites.filter(n => t.tierOf[n] === 3)[0];
+      if (!top46.has(b)) outside++;
+    }
+    return outside > 0 ? true : 'final ball never left the top 46';
+  });
+  check('tiers: no ball is reused across bands', () => {
+    for (const t of tieredBatch) if (new Set(t.whites).size !== 5) return `duplicate in ${t.whites}`;
+    return true;
+  });
+
+  /* — parity and sum constraints — */
+  check('constraint: parity matches the drawn Powerball\'s dominant pattern', () => {
+    for (const t of tieredBatch) {
+      if (t.relaxation === 'sum+parity') continue; // parity was explicitly relaxed
+      const want = gm.parityTargets[t.powerball].target;
+      if (t.metrics.odds !== want) return `PB ${t.powerball}: wanted ${want}O, got ${t.metrics.odds}O`;
+    }
+    return true;
+  });
+  check('constraint: the parity target is 2 or 3 odd for every Powerball', () => {
+    for (let pb = 1; pb <= POWERBALL_MAX; pb++) {
+      const tgt = gm.parityTargets[pb].target;
+      if (tgt !== 2 && tgt !== 3) return `PB ${pb} target ${tgt}`;
+    }
+    return true;
+  });
+  check('constraint: sum falls inside the derived range', () => {
+    const { lo, hi } = gm.sumRange;
+    for (const t of tieredBatch) {
+      if (t.relaxation !== 'none') continue;
+      if (t.metrics.sum < lo || t.metrics.sum > hi) return `sum ${t.metrics.sum} outside ${lo}-${hi}`;
+    }
+    return true;
+  });
+  check('constraint: sum range is derived, not hardcoded', () => {
+    // A fixture of deliberately low-sum draws must move the window.
+    const lows = [];
+    for (let i = 0; i < 40; i++) lows.push(['Sat Jan 3 2026', 1, 2, 3, 4, 5 + (i % 3), 7, 2, '$1M']);
+    const alt = buildGeneratorModel(lows);
+    return alt.sumRange.lo !== gm.sumRange.lo ? true
+      : `both windows start at ${gm.sumRange.lo}`;
+  });
+  check('constraint: sum range matches the sum-distribution helper', () => {
+    const asText = `${gm.sumRange.lo}–${gm.sumRange.hi}`;
+    return eq(getMostCommonSumRange(RAW_DRAWS), asText, 'sum range');
+  });
+  check('constraint: parity fallback fires for a non 2/3 or 3/2 dominant pattern', () => {
+    // Every draw on PB 5 is all-odd, so its dominant pattern is 5O/0E.
+    const odd = [];
+    for (let i = 0; i < 30; i++) odd.push(['Sat Jan 3 2026', 1, 3, 5, 7, 9, 5, 2, '$1M']);
+    odd.push(['Sat Jan 3 2026', 2, 4, 6, 8, 11, 5, 2, '$1M']); // one 1O/4E
+    odd.push(['Sat Jan 3 2026', 1, 2, 3, 4, 6, 5, 2, '$1M']);  // one 3O/2E
+    const alt = buildGeneratorModel(odd);
+    const p = alt.parityTargets[5];
+    return p.fallback === true && (p.target === 2 || p.target === 3)
+      ? true : `fallback=${p.fallback} target=${p.target}`;
+  });
+  check('relaxation: tickets meeting every rule are marked "none"', () => {
+    const clean = tieredBatch.filter(t => t.relaxation === 'none');
+    return clean.length > 0 ? true : 'no ticket satisfied the full rule set';
+  });
+  check('relaxation: an impossible sum window still returns a flagged ticket', () => {
+    const impossible = { ...gm, sumRange: { lo: 400, hi: 402, count: 0, share: 0 } };
+    const t = generateTicket(impossible, 'weighted', seeded(), { maxAttempts: 60 });
+    return t && t.relaxation !== 'none' && t.whites.length === 5
+      ? true : `relaxation=${t && t.relaxation}`;
+  });
+  check('relaxation: the ladder degrades sum before parity', () => {
+    const impossible = { ...gm, sumRange: { lo: 400, hi: 402, count: 0, share: 0 } };
+    const t = generateTicket(impossible, 'weighted', seeded(), { maxAttempts: 200 });
+    // Sum is unreachable at any width, so the ladder must drop it while keeping
+    // parity intact rather than degrading both at once.
+    return t.relaxation === 'sum' && t.metrics.odds === gm.parityTargets[t.powerball].target
+      ? true : `relaxation=${t.relaxation}, odds=${t.metrics.odds}`;
+  });
+  check('relaxation: attempt budget is respected', () => {
+    const impossible = { ...gm, sumRange: { lo: 400, hi: 402, count: 0, share: 0 } };
+    const t = generateTicket(impossible, 'weighted', seeded(), { maxAttempts: 25 });
+    return t.attempts <= 25 ? true : `used ${t.attempts} attempts`;
+  });
+
+  /* — tier config is the single source of truth — */
+  check('config: tier counts total 5 white balls', () =>
+    eq(TIER_CONFIG.counts.reduce((a, b) => a + b, 0), WHITE_PICKS, 'white ball total'));
+  check('config: counts and pools are parallel arrays', () =>
+    eq(TIER_CONFIG.counts.length, TIER_CONFIG.pools.length, 'array lengths'));
+  check('config: pool sizes increase monotonically', () => {
+    for (let i = 1; i < TIER_CONFIG.pools.length; i++) {
+      if (TIER_CONFIG.pools[i] < TIER_CONFIG.pools[i - 1]) return 'pools not ascending';
+    }
+    return true;
+  });
+  check('config: the final tier spans all 69 numbers', () =>
+    eq(TIER_CONFIG.pools[TIER_CONFIG.pools.length - 1], WHITE_MAX, 'final pool'));
+
   /* — draw UI state — */
   check('draw: mode switch updates the radio group', () => {
     const original = drawMode;
@@ -4830,6 +5197,7 @@ function init() {
   renderParityAnalysis();
   generatorModel = buildGeneratorModel(RAW_DRAWS);
   renderDrawModes();
+  renderDrawConstraints();
   renderHistory(RAW_DRAWS);
   updateLastUpdated();
   setHistoryStatus(
