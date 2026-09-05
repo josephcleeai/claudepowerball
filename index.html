@@ -631,9 +631,126 @@
   .dist-bar-wrap { height: 6px; background: var(--surface2); border-radius: 3px; width: 80px; display: inline-block; overflow: hidden; }
   .dist-bar-fill { height: 100%; border-radius: 3px; }
 
+  /* ── DRAW HISTORY REFRESH ───────────────────────── */
+  .history-refresh {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--orange); border: 1px solid var(--orange);
+    color: #fff; font-size: 12px; font-weight: 700;
+    padding: 7px 14px; border-radius: 999px;
+    cursor: pointer; transition: background 0.2s, border-color 0.2s, opacity 0.2s;
+    font-family: 'Nunito Sans', -apple-system, sans-serif;
+    box-shadow: var(--shadow-sm); white-space: nowrap;
+  }
+  .history-refresh:hover:not(:disabled) { background: var(--orange-dk); border-color: var(--orange-dk); }
+  .history-refresh:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+  .history-refresh:disabled { opacity: 0.6; cursor: progress; }
+  .history-refresh.is-busy svg { animation: spin 1s linear infinite; }
+  .history-status {
+    font-size: 12px; color: var(--muted); font-style: italic;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .history-status.is-error { color: var(--red); font-style: normal; font-weight: 600; }
+  .history-status.is-ok { color: var(--green); font-style: normal; }
+
+  /* ── PARITY ANALYSIS ────────────────────────────── */
+  .parity-controls {
+    display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r2); padding: 16px 18px; margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .parity-field { display: flex; flex-direction: column; gap: 6px; }
+  .parity-field label, .parity-field .parity-hint-label {
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.7px;
+    text-transform: uppercase; color: var(--subtle);
+  }
+  .parity-field select, .parity-field input {
+    background: var(--surface); border: 1px solid var(--border2); color: var(--text);
+    padding: 8px 12px; border-radius: var(--r); font-size: 13px;
+    font-family: 'Nunito Sans', -apple-system, sans-serif; outline: none; min-width: 190px;
+  }
+  .parity-field select:focus-visible, .parity-field input:focus-visible {
+    border-color: var(--orange); outline: 2px solid rgba(217,119,87,0.35); outline-offset: 1px;
+  }
+  .parity-scope { font-size: 12px; color: var(--muted); margin-left: auto; text-align: right; line-height: 1.5; }
+  .parity-scope strong { color: var(--text); font-family: 'DM Mono', monospace; }
+
+  .parity-note {
+    display: flex; gap: 10px; align-items: flex-start;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-left: 3px solid var(--blue);
+    border-radius: var(--r2); padding: 13px 16px; margin-bottom: 16px;
+  }
+  .parity-note .pn-icon { font-size: 15px; line-height: 1.3; flex-shrink: 0; }
+  .parity-note .pn-body { font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+  .parity-note .pn-body strong { color: var(--text); }
+
+  .parity-pattern-legend { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .ppl-item {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; color: var(--muted);
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 3px 9px; border-radius: 999px;
+  }
+  .ppl-swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  /* sortable table */
+  .sortable-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .sortable-table th { padding: 0; }
+  .sortable-table th button.sort-btn {
+    width: 100%; background: none; border: none; cursor: pointer;
+    font: inherit; font-size: 10.5px; font-weight: 700; letter-spacing: 0.6px;
+    text-transform: uppercase; color: var(--subtle); text-align: left;
+    padding: 11px 12px; display: flex; align-items: center; gap: 5px;
+    font-family: 'Nunito Sans', -apple-system, sans-serif;
+  }
+  .sortable-table th button.sort-btn:hover { color: var(--text); }
+  .sortable-table th button.sort-btn:focus-visible { outline: 2px solid var(--orange); outline-offset: -2px; }
+  .sortable-table th button.sort-btn .sort-caret { font-size: 9px; opacity: 0.35; }
+  .sortable-table th[aria-sort] button.sort-btn { color: var(--orange); }
+  .sortable-table th[aria-sort] button.sort-btn .sort-caret { opacity: 1; }
+  .sortable-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .sortable-table tbody tr:last-child td { border-bottom: none; }
+  .sortable-table tbody tr:hover td { background: rgba(0,0,0,0.02); }
+  .sortable-table tbody tr.is-selected td { background: rgba(217,119,87,0.08); }
+
+  .dev-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+    white-space: nowrap;
+  }
+  .dev-above { background: rgba(217,119,87,0.15); color: var(--orange-dk); }
+  .dev-near  { background: rgba(0,0,0,0.05);      color: var(--muted); }
+  .dev-below { background: rgba(106,155,204,0.16); color: #2a5f8a; }
+
+  .parity-empty { padding: 28px 16px; text-align: center; font-size: 13px; color: var(--muted); font-style: italic; }
+
+  /* self-test panel */
+  .test-panel { margin-top: 16px; }
+  .test-toggle {
+    background: var(--surface); border: 1px solid var(--border2); color: var(--muted);
+    font-size: 11.5px; font-weight: 600; padding: 6px 13px; border-radius: 999px;
+    cursor: pointer; font-family: 'Nunito Sans', -apple-system, sans-serif;
+  }
+  .test-toggle:hover { border-color: var(--orange); color: var(--orange); }
+  .test-toggle:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+  .test-results {
+    margin-top: 12px; font-family: 'DM Mono', monospace; font-size: 11.5px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r2); padding: 14px 16px; max-height: 260px; overflow-y: auto;
+  }
+  .test-line { display: flex; gap: 8px; padding: 2px 0; line-height: 1.5; }
+  .test-line .tl-tag { font-weight: 700; flex-shrink: 0; }
+  .test-pass .tl-tag { color: var(--green); }
+  .test-fail .tl-tag { color: var(--red); }
+  .test-summary { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); font-weight: 700; }
+
   @media (max-width: 768px) {
     .pattern-metrics-grid { grid-template-columns: 1fr; }
     .dow-overview-grid { grid-template-columns: 1fr 1fr; }
+    .parity-scope { margin-left: 0; text-align: left; width: 100%; }
+    .parity-field select, .parity-field input { min-width: 0; width: 100%; }
+    .parity-field { width: 100%; }
   }
   @media (max-width: 480px) {
     .dow-overview-grid { grid-template-columns: 1fr; }
@@ -676,6 +793,7 @@
       <a href="#latest" class="active">Latest</a>
       <a href="#analysis">Analysis</a>
       <a href="#deep-analysis">Deep Analysis</a>
+      <a href="#parity">Parity</a>
       <a href="#history">History</a>
       <a href="#patterns">Patterns</a>
     </div>
@@ -1018,19 +1136,111 @@
     </section>
 
     <!-- History -->
+    <!-- Powerball vs. white-ball parity -->
+    <section id="parity">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="icon" style="background:rgba(192,57,43,0.13);">⚖️</div>
+          Powerball Number vs. White-Ball Odd/Even Distribution
+        </div>
+        <div class="section-desc">Historical descriptive analysis — not forecasting</div>
+      </div>
+
+      <div class="parity-note">
+        <div class="pn-icon" aria-hidden="true">ℹ️</div>
+        <div class="pn-body">
+          <strong>How to read this.</strong> Each Powerball drawing is an independent event. Every white-ball
+          combination and every red Powerball has the same chance on every draw, so the patterns below
+          <strong>do not change the probability of any future result</strong>. This section only describes what
+          has already been recorded in the dataset.
+          <span id="parity-scope-inline"></span>
+        </div>
+      </div>
+
+      <div class="parity-controls">
+        <div class="parity-field">
+          <label for="parity-select">Powerball number</label>
+          <input list="parity-options" id="parity-select" type="text" inputmode="numeric"
+                 placeholder="Type or pick 1–26" value="1"
+                 aria-describedby="parity-select-help" onchange="onParitySelect(this.value)" oninput="onParitySelect(this.value)">
+          <datalist id="parity-options"></datalist>
+        </div>
+        <div class="parity-field" role="note">
+          <span class="parity-hint-label">Using this control</span>
+          <span id="parity-select-help" style="font-size:12px;color:var(--muted);max-width:260px;line-height:1.5;">
+            Type a number 1–26 or use the list. The table below is sortable via its column buttons.
+          </span>
+        </div>
+        <div class="parity-scope" id="parity-scope">–</div>
+      </div>
+
+      <div class="grid-4" id="parity-cards" style="margin-bottom:16px;"></div>
+
+      <div id="parity-insight" style="margin-bottom:16px;"></div>
+
+      <div class="chart-card" style="margin-bottom:16px;">
+        <h3 id="parity-chart-title">White-Ball Parity Distribution</h3>
+        <div class="chart-desc" id="parity-chart-desc">Occurrences of each odd/even white-ball split for the selected Powerball number</div>
+        <div class="chart-wrap" style="height:300px;">
+          <canvas id="chartParity" role="img" aria-label="Bar chart of white-ball odd/even pattern counts for the selected Powerball number"></canvas>
+        </div>
+        <div class="parity-pattern-legend" id="parity-legend"></div>
+        <div id="parity-chart-table" class="chart-text-equivalent" style="margin-top:12px;font-size:12px;color:var(--muted);"></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>All Powerball Numbers — Dominant White-Ball Parity Pattern</h3>
+        <div class="chart-desc">One row per Powerball number. The final column compares each number's leading pattern against the overall rate and against the ±2 standard-error band expected from chance at that sample size — a number reads "Near noise" when the gap is unremarkable. Because the leading pattern is by definition the largest of six, its share runs slightly high even in perfectly random data. Sort any column; the ▲/▼ caret and the text label both carry the state.</div>
+        <div style="overflow-x:auto;">
+          <table class="sortable-table" id="parity-table">
+            <caption class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">
+              Powerball numbers with total appearances, most common white-ball parity pattern, its frequency and percentage, and deviation from the overall historical rate.
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col"><button type="button" class="sort-btn" onclick="sortParityTable('pb')">Powerball <span class="sort-caret" aria-hidden="true">▲</span></button></th>
+                <th scope="col"><button type="button" class="sort-btn" onclick="sortParityTable('total')">Appearances <span class="sort-caret" aria-hidden="true">▲</span></button></th>
+                <th scope="col"><button type="button" class="sort-btn" onclick="sortParityTable('pattern')">Most common pattern <span class="sort-caret" aria-hidden="true">▲</span></button></th>
+                <th scope="col"><button type="button" class="sort-btn" onclick="sortParityTable('count')">Frequency <span class="sort-caret" aria-hidden="true">▲</span></button></th>
+                <th scope="col"><button type="button" class="sort-btn" onclick="sortParityTable('pctOfPb')">Share <span class="sort-caret" aria-hidden="true">▲</span></button></th>
+                <th scope="col"><button type="button" class="sort-btn" onclick="sortParityTable('delta')">vs. overall rate <span class="sort-caret" aria-hidden="true">▲</span></button></th>
+              </tr>
+            </thead>
+            <tbody id="parity-tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="test-panel">
+          <button type="button" class="test-toggle" onclick="toggleSelfTests()" aria-expanded="false" aria-controls="test-results" id="test-toggle-btn">
+            Run analysis self-tests
+          </button>
+          <div id="test-results" hidden></div>
+        </div>
+      </div>
+    </section>
+
     <section id="history">
       <div class="section-header">
         <div class="section-title">
           <div class="icon" style="background:rgba(106,155,204,0.15);">📋</div>
           Draw History
         </div>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <input id="search-input" type="text" placeholder="Search date or number…"
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
+          <input id="search-input" type="text" placeholder="Search date or number…" aria-label="Search draw history by date or number"
             style="background:var(--surface);border:1px solid var(--border2);color:var(--text);padding:7px 14px;border-radius:999px;font-size:12px;font-family:'Nunito Sans',sans-serif;outline:none;width:210px;box-shadow:var(--shadow-sm);"
             oninput="filterHistory(this.value)">
           <span style="font-size:12px;color:var(--muted);" id="history-count">–</span>
+          <button id="history-refresh-btn" class="history-refresh" type="button"
+                  onclick="refreshDrawHistory()" aria-controls="history-tbody">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+            </svg>
+            <span id="history-refresh-label">Refresh</span>
+          </button>
         </div>
       </div>
+      <div class="history-status" id="history-status" role="status" aria-live="polite" style="margin-bottom:10px;">–</div>
       <div class="history-wrap">
         <div class="history-scroll">
           <table>
@@ -1071,10 +1281,48 @@
 
 <script>
 /* ═══════════════════════════════════════════════
-   DATA – 918 draws (Oct 2015 – Jun 6 2026)
+   DATA – 956 draws (Oct 7 2015 – Sep 2 2026)
    Format: [date, w1, w2, w3, w4, w5, pb, pp, jackpot]
    ═══════════════════════════════════════════════ */
 const RAW_DRAWS = [
+["Wed Sep 2 2026",3,10,29,58,64,14,2,"$146M"],
+["Mon Aug 31 2026",11,17,25,37,49,10,2,"$131M"],
+["Sat Aug 29 2026",18,56,62,65,67,18,2,"$119M"],
+["Wed Aug 26 2026",12,32,45,50,58,2,2,"$96M"],
+["Mon Aug 24 2026",3,16,33,38,68,2,2,"$81M"],
+["Sat Aug 22 2026",13,31,54,57,65,23,3,"$68M"],
+["Wed Aug 19 2026",10,21,58,61,64,17,2,"$48M"],
+["Mon Aug 17 2026",8,15,25,49,65,22,4,"$35M"],
+["Sat Aug 15 2026",5,8,27,29,63,13,2,"$20M"],
+["Wed Aug 12 2026",4,26,66,67,69,9,2,"$1B"],
+["Mon Aug 10 2026",6,37,54,55,64,10,3,"$905M"],
+["Sat Aug 8 2026",5,9,35,54,63,7,3,"$856M"],
+["Wed Aug 5 2026",14,20,59,60,61,25,2,"$786M"],
+["Mon Aug 3 2026",8,30,41,48,54,4,2,"$748M"],
+["Sat Aug 1 2026",6,17,27,48,50,5,3,"$707M"],
+["Wed Jul 29 2026",30,36,40,42,57,2,2,"$663M"],
+["Mon Jul 27 2026",6,26,46,58,65,25,2,"$633M"],
+["Sat Jul 25 2026",3,4,24,36,47,17,4,"$600M"],
+["Wed Jul 22 2026",4,5,22,50,58,1,3,"$567M"],
+["Mon Jul 20 2026",2,9,44,53,59,8,2,"$544M"],
+["Sat Jul 18 2026",9,14,44,50,56,3,4,"$526M"],
+["Wed Jul 15 2026",2,7,18,29,38,16,2,"$498M"],
+["Mon Jul 13 2026",5,25,36,40,48,3,2,"$478M"],
+["Sat Jul 11 2026",8,10,14,45,59,5,2,"$457M"],
+["Wed Jul 8 2026",12,29,37,43,55,18,4,"$434M"],
+["Mon Jul 6 2026",17,44,63,66,67,4,2,"$416M"],
+["Sat Jul 4 2026",17,38,46,50,69,20,2,"$396M"],
+["Wed Jul 1 2026",2,6,26,39,68,6,2,"$375M"],
+["Mon Jun 29 2026",10,14,41,53,59,3,2,"$360M"],
+["Sat Jun 27 2026",3,16,28,30,59,11,2,"$348M"],
+["Wed Jun 24 2026",13,14,16,21,38,14,2,"$327M"],
+["Mon Jun 22 2026",17,19,21,45,48,13,2,"$312M"],
+["Sat Jun 20 2026",16,20,44,48,50,15,2,"$302M"],
+["Wed Jun 17 2026",3,26,49,53,61,12,2,"$283M"],
+["Mon Jun 15 2026",25,55,57,60,62,23,2,"$269M"],
+["Sat Jun 13 2026",3,13,44,50,53,2,4,"$258M"],
+["Wed Jun 10 2026",12,31,38,60,66,14,2,"$238M"],
+["Mon Jun 8 2026",3,24,34,43,49,20,3,"$225M"],
 ["Sat Jun 6 2026",16,32,55,59,64,3,3,"$212M"],
 ["Wed Jun 3 2026",14,16,38,55,64,12,3,"$194.2M"],
 ["Mon Jun 1 2026",2,42,47,57,58,14,3,"$181.2M"],
@@ -2006,6 +2254,218 @@ const RAW_DRAWS = [
    ═══════════════════════════════════════════════ */
 let charts = {};
 let filteredDraws = [...RAW_DRAWS];
+
+/* ═══════════════════════════════════════════════
+   DATA LAYER — normalization & merge (pure)
+   No DOM access below this banner until the
+   RENDER FUNCTIONS section.
+   ═══════════════════════════════════════════════ */
+
+/* Configured remote source. NY State Open Data publishes the official
+   multi-state Powerball draw file and serves CORS headers, so it can be
+   read directly from the browser with no proxy or key. */
+const DATA_SOURCE = {
+  name: 'NY State Open Data — Powerball',
+  url: 'https://data.ny.gov/resource/d6yy-54nr.json?$order=draw_date%20DESC&$limit=75',
+  attribution: 'data.ny.gov',
+  timeoutMs: 12000
+};
+
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+/* "Wed Sep 2 2026" -> epoch ms (UTC-normalized, so sorting is stable
+   regardless of the viewer's timezone). Returns NaN if unparseable. */
+function parseDrawDate(label) {
+  if (typeof label !== 'string') return NaN;
+  const m = label.trim().match(/^(?:\w{3}\s+)?(\w{3})\s+(\d{1,2})\s+(\d{4})$/);
+  if (!m) return NaN;
+  const mi = MONTHS.indexOf(m[1]);
+  if (mi < 0) return NaN;
+  return Date.UTC(+m[3], mi, +m[2]);
+}
+
+/* epoch ms -> "Wed Sep 2 2026", the label format the app already uses. */
+function formatDrawDate(ms) {
+  const d = new Date(ms);
+  return `${DAYS[d.getUTCDay()]} ${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()} ${d.getUTCFullYear()}`;
+}
+
+/* Short display form used in status messages: "Sep 2, 2026". */
+function formatShortDate(ms) {
+  const d = new Date(ms);
+  return `${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
+}
+
+/* A draw row is valid only under the current 5/69 + 1/26 matrix. */
+function isValidDrawRow(row) {
+  if (!Array.isArray(row) || row.length < 8) return false;
+  if (!Number.isFinite(parseDrawDate(row[0]))) return false;
+  const whites = row.slice(1, 6);
+  if (!whites.every(n => Number.isInteger(n) && n >= 1 && n <= 69)) return false;
+  if (new Set(whites).size !== 5) return false;
+  if (whites.some((n, i) => i > 0 && n < whites[i - 1])) return false; // ascending
+  return Number.isInteger(row[6]) && row[6] >= 1 && row[6] <= 26;
+}
+
+/* Socrata record -> internal row, or null when the record is unusable.
+   Expected shape: { draw_date, winning_numbers: "03 10 29 58 64 14", multiplier } */
+function normalizeSourceRecord(rec) {
+  if (!rec || typeof rec.draw_date !== 'string' || typeof rec.winning_numbers !== 'string') return null;
+  const nums = rec.winning_numbers.trim().split(/[\s,-]+/).map(Number);
+  if (nums.length !== 6 || nums.some(n => !Number.isInteger(n))) return null;
+
+  const iso = rec.draw_date.slice(0, 10).split('-').map(Number);
+  if (iso.length !== 3 || iso.some(n => !Number.isFinite(n))) return null;
+  const ms = Date.UTC(iso[0], iso[1] - 1, iso[2]);
+  if (!Number.isFinite(ms)) return null;
+
+  const whites = nums.slice(0, 5).sort((a, b) => a - b);
+  const pp = Number(rec.multiplier);
+  const row = [
+    formatDrawDate(ms),
+    whites[0], whites[1], whites[2], whites[3], whites[4],
+    nums[5],
+    Number.isFinite(pp) && pp > 0 ? pp : 1,
+    '—'
+  ];
+  return isValidDrawRow(row) ? row : null;
+}
+
+/* Merge incoming rows into existing history.
+   - Deduplicates on draw date; existing records win, so locally curated
+     fields (jackpot strings) are never clobbered by a thinner feed.
+   - Returns a NEW array sorted newest-first. Inputs are not mutated. */
+function mergeDraws(existing, incoming) {
+  const byDate = new Map();
+  for (const row of existing) {
+    const ms = parseDrawDate(row[0]);
+    if (Number.isFinite(ms)) byDate.set(ms, row);
+  }
+  let added = 0;
+  for (const row of incoming || []) {
+    if (!isValidDrawRow(row)) continue;
+    const ms = parseDrawDate(row[0]);
+    if (byDate.has(ms)) continue;
+    byDate.set(ms, row);
+    added++;
+  }
+  const merged = [...byDate.entries()]
+    .sort((a, b) => b[0] - a[0])
+    .map(e => e[1]);
+  return { draws: merged, added };
+}
+
+/* ═══════════════════════════════════════════════
+   PARITY ANALYSIS ENGINE (pure)
+   ═══════════════════════════════════════════════ */
+
+/* The six possible odd/even splits of five white balls. */
+const PARITY_PATTERNS = [0, 1, 2, 3, 4, 5].map(odd => ({
+  odd,
+  even: 5 - odd,
+  key: `${odd}o${5 - odd}e`,
+  label: `${odd} Odd / ${5 - odd} Even`,
+  short: `${odd}O/${5 - odd}E`
+}));
+
+const PARITY_COLORS = [
+  'rgba(106,155,204,0.85)', 'rgba(122,166,190,0.85)', 'rgba(150,160,150,0.85)',
+  'rgba(190,150,110,0.85)', 'rgba(217,119,87,0.85)',  'rgba(184,95,63,0.9)'
+];
+
+/* Counts odd and even white balls in one draw row.
+   Throws on a malformed row so bad data surfaces instead of silently skewing. */
+function countWhiteBallParity(row) {
+  const whites = [row[1], row[2], row[3], row[4], row[5]];
+  if (whites.some(n => !Number.isInteger(n))) {
+    throw new Error(`Malformed white balls in draw ${row && row[0]}`);
+  }
+  let oddWhiteBallCount = 0;
+  for (const n of whites) if (n % 2 !== 0) oddWhiteBallCount++;
+  const evenWhiteBallCount = whites.length - oddWhiteBallCount;
+  // Invariant required by the spec: odd + even must always total 5.
+  if (oddWhiteBallCount + evenWhiteBallCount !== 5) {
+    throw new Error(`Parity invariant violated for draw ${row[0]}`);
+  }
+  return { oddWhiteBallCount, evenWhiteBallCount };
+}
+
+function safePct(count, total) {
+  return total > 0 ? (count / total) * 100 : 0;
+}
+
+/* Builds the full analysis object from a draw list.
+   Shape:
+   {
+     totalDraws, dateRange: {from, to},
+     overall:  { counts:[6], pcts:[6] },
+     byPowerball: Map-like object keyed 1..26 ->
+        { pb, total, counts:[6], pcts:[6], top:{...}|null, deltaPP, deviation }
+     rows: [ ...byPowerball values, ordered 1..26 ]
+   } */
+function buildParityAnalysis(draws) {
+  const overallCounts = new Array(6).fill(0);
+  const byPowerball = {};
+  for (let pb = 1; pb <= 26; pb++) {
+    byPowerball[pb] = { pb, total: 0, counts: new Array(6).fill(0), pcts: new Array(6).fill(0), top: null, deltaPP: 0, noiseBandPP: 0, deviation: 'near' };
+  }
+
+  let minMs = Infinity, maxMs = -Infinity;
+
+  for (const row of draws) {
+    const { oddWhiteBallCount } = countWhiteBallParity(row);
+    const pb = row[6];
+    overallCounts[oddWhiteBallCount]++;
+    if (Number.isInteger(pb) && pb >= 1 && pb <= 26) {
+      const b = byPowerball[pb];
+      b.total++;
+      b.counts[oddWhiteBallCount]++;
+    }
+    const ms = parseDrawDate(row[0]);
+    if (Number.isFinite(ms)) { if (ms < minMs) minMs = ms; if (ms > maxMs) maxMs = ms; }
+  }
+
+  const totalDraws = draws.length;
+  const overallPcts = overallCounts.map(c => safePct(c, totalDraws));
+
+  for (let pb = 1; pb <= 26; pb++) {
+    const b = byPowerball[pb];
+    b.pcts = b.counts.map(c => safePct(c, b.total));
+    if (b.total > 0) {
+      let bestIdx = 0;
+      for (let i = 1; i < 6; i++) if (b.counts[i] > b.counts[bestIdx]) bestIdx = i;
+      // Ties resolve to the lower odd-count for deterministic output.
+      const tied = b.counts.filter(c => c === b.counts[bestIdx]).length > 1;
+      b.top = {
+        index: bestIdx,
+        pattern: PARITY_PATTERNS[bestIdx],
+        count: b.counts[bestIdx],
+        pct: b.pcts[bestIdx],
+        tied
+      };
+      b.deltaPP = b.pcts[bestIdx] - overallPcts[bestIdx];
+      /* Compare the gap against ~2 binomial standard errors rather than a fixed
+         cutoff. Two reasons: sample sizes here are small (roughly total/26 draws
+         per number), and the highlighted pattern is by construction the largest
+         of six, which biases its share upward even in perfectly random data.
+         A fixed threshold would label almost every number "above". */
+      const p = overallPcts[bestIdx] / 100;
+      b.noiseBandPP = 2 * Math.sqrt(Math.max(p * (1 - p), 0) / b.total) * 100;
+      b.deviation = b.deltaPP > b.noiseBandPP ? 'above'
+                  : b.deltaPP < -b.noiseBandPP ? 'below'
+                  : 'near';
+    }
+  }
+
+  return {
+    totalDraws,
+    dateRange: totalDraws ? { from: minMs, to: maxMs } : null,
+    overall: { counts: overallCounts, pcts: overallPcts },
+    byPowerball,
+    rows: Object.values(byPowerball)
+  };
+}
 
 function computeStats() {
   const wFreq = new Array(70).fill(0);
@@ -3023,6 +3483,616 @@ function showToast(msg, type='info') {
 }
 
 /* ═══════════════════════════════════════════════
+   PARITY — PRESENTATION
+   ═══════════════════════════════════════════════ */
+let parityData = null;
+let paritySelectedPb = 1;
+let paritySort = { key: 'pb', dir: 'asc' };
+
+function fmtPct(v) { return `${v.toFixed(1)}%`; }
+function fmtDelta(v) {
+  const s = v >= 0 ? '+' : '−';
+  return `${s}${Math.abs(v).toFixed(1)} pp`;
+}
+function deviationMeta(dev) {
+  if (dev === 'above') return { cls: 'dev-above', glyph: '▲', word: 'Above' };
+  if (dev === 'below') return { cls: 'dev-below', glyph: '▼', word: 'Below' };
+  return { cls: 'dev-near', glyph: '■', word: 'Near' };
+}
+
+function renderParityScope() {
+  const a = parityData;
+  const range = a.dateRange
+    ? `${formatShortDate(a.dateRange.from)} – ${formatShortDate(a.dateRange.to)}`
+    : '—';
+  document.getElementById('parity-scope').innerHTML =
+    `Dataset: <strong>${a.totalDraws.toLocaleString()}</strong> drawings<br>${range}`;
+  document.getElementById('parity-scope-inline').textContent =
+    ` Dataset in use: ${a.totalDraws.toLocaleString()} drawings spanning ${range}.`;
+}
+
+function renderParityOptions() {
+  const dl = document.getElementById('parity-options');
+  dl.innerHTML = parityData.rows
+    .map(r => `<option value="${r.pb}">Powerball ${r.pb} — ${r.total} appearance${r.total === 1 ? '' : 's'}</option>`)
+    .join('');
+}
+
+function renderParityCards() {
+  const b = parityData.byPowerball[paritySelectedPb];
+  const el = document.getElementById('parity-cards');
+
+  if (!b || b.total === 0) {
+    el.innerHTML = `<div class="stat-card" style="grid-column:1/-1;">
+      <div class="stat-label">Powerball ${paritySelectedPb}</div>
+      <div class="stat-value">0</div>
+      <div class="stat-sub">This number has not been drawn in the current dataset.</div>
+    </div>`;
+    return;
+  }
+
+  const overallPct = parityData.overall.pcts[b.top.index];
+  const dev = deviationMeta(b.deviation);
+
+  el.innerHTML = `
+    <div class="stat-card stat-accent-orange">
+      <div class="stat-label">Selected Powerball</div>
+      <div class="stat-value" style="display:flex;align-items:center;gap:10px;">
+        <span class="ball red" style="width:38px;height:38px;font-size:16px;">${b.pb}</span>
+      </div>
+      <div class="stat-sub">Red ball, range 1–26</div>
+    </div>
+    <div class="stat-card stat-accent-blue">
+      <div class="stat-label">Historical appearances</div>
+      <div class="stat-value">${b.total}</div>
+      <div class="stat-sub">${fmtPct(safePct(b.total, parityData.totalDraws))} of all ${parityData.totalDraws.toLocaleString()} drawings</div>
+    </div>
+    <div class="stat-card stat-accent-green">
+      <div class="stat-label">Most common white-ball split</div>
+      <div class="stat-value" style="font-size:22px;">${b.top.pattern.label}</div>
+      <div class="stat-sub">${b.top.count} of ${b.total} appearance${b.total === 1 ? '' : 's'}${b.top.tied ? ' · tied with another split' : ''}</div>
+    </div>
+    <div class="stat-card stat-accent-gold">
+      <div class="stat-label">Share of its appearances</div>
+      <div class="stat-value">${fmtPct(b.top.pct)}</div>
+      <div class="stat-sub">
+        Overall rate for ${b.top.pattern.short}: ${fmtPct(overallPct)}
+        <span class="dev-pill ${dev.cls}" style="margin-left:4px;">
+          <span aria-hidden="true">${dev.glyph}</span>${dev.word} · ${fmtDelta(b.deltaPP)}
+        </span>
+      </div>
+    </div>`;
+}
+
+function renderParityInsight() {
+  const b = parityData.byPowerball[paritySelectedPb];
+  const el = document.getElementById('parity-insight');
+
+  if (!b || b.total === 0) { el.innerHTML = ''; return; }
+
+  const overallPct = parityData.overall.pcts[b.top.index];
+  const band = b.noiseBandPP;
+  const comparison = b.deviation === 'near'
+    ? `Across all ${parityData.totalDraws.toLocaleString()} drawings that same split occurs ${fmtPct(overallPct)} of the time, a gap of ${fmtDelta(b.deltaPP)}. That sits inside the ±${band.toFixed(1)} pp range expected from sampling noise alone at ${b.total} appearances, so it is not evidence of any relationship between the red ball and white-ball parity.`
+    : `Across all ${parityData.totalDraws.toLocaleString()} drawings that same split occurs ${fmtPct(overallPct)} of the time, a gap of ${fmtDelta(b.deltaPP)} — outside the ±${band.toFixed(1)} pp sampling-noise range for ${b.total} appearances. Read that cautiously: this pattern was picked because it was the largest of six, which inflates its share even in perfectly random data.`;
+
+  el.innerHTML = `
+    <div class="insight-card">
+      <div class="insight-icon" style="background:rgba(192,57,43,0.12);">⚖️</div>
+      <div>
+        <div class="insight-title">Observed pattern for Powerball #${b.pb}</div>
+        <div class="insight-body">
+          When Powerball <strong>#${b.pb}</strong> was drawn, the most common white-ball composition in the
+          available dataset was <strong>${b.top.pattern.odd} odd and ${b.top.pattern.even} even</strong>,
+          occurring in <strong>${b.top.count} of ${b.total}</strong> appearances (<strong>${fmtPct(b.top.pct)}</strong>).
+          ${comparison}
+          Drawings are independent, so this describes history only — it does not make any composition more likely next time.
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderParityChart() {
+  const b = parityData.byPowerball[paritySelectedPb];
+  const counts = b ? b.counts : new Array(6).fill(0);
+  const pcts = b ? b.pcts : new Array(6).fill(0);
+  const overallPcts = parityData.overall.pcts;
+
+  document.getElementById('parity-chart-title').textContent =
+    `White-Ball Parity Distribution — Powerball #${paritySelectedPb}`;
+  document.getElementById('parity-chart-desc').textContent = b && b.total
+    ? `${b.total} recorded appearance${b.total === 1 ? '' : 's'}. Solid bars show this Powerball number; the outlined bars show the same split across all ${parityData.totalDraws.toLocaleString()} drawings, rescaled to this sample size for comparison.`
+    : 'No recorded appearances for this Powerball number in the current dataset.';
+
+  if (charts.parity) charts.parity.destroy();
+  charts.parity = new Chart(document.getElementById('chartParity'), {
+    type: 'bar',
+    data: {
+      labels: PARITY_PATTERNS.map(p => p.label),
+      datasets: [
+        {
+          label: `Powerball #${paritySelectedPb}`,
+          data: counts,
+          backgroundColor: PARITY_COLORS,
+          borderRadius: 3,
+          borderWidth: 0
+        },
+        {
+          label: 'Expected from overall rate',
+          data: overallPcts.map(pc => b && b.total ? (pc / 100) * b.total : 0),
+          backgroundColor: 'rgba(0,0,0,0)',
+          borderColor: 'rgba(26,25,21,0.55)',
+          borderWidth: 1.5,
+          borderDash: [4, 3],
+          borderRadius: 3
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { color: '#6b6a65', font: { size: 11, family: 'Nunito Sans' } }
+        },
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: 'Occurrences', color: '#6b6a65', font: { size: 11, family: 'Nunito Sans' } },
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          ticks: { color: '#6b6a65', precision: 0, font: { size: 11, family: 'DM Mono' } }
+        }
+      },
+      plugins: {
+        legend: {
+          display: true, position: 'bottom',
+          labels: { color: '#6b6a65', boxWidth: 12, font: { size: 11, family: 'Nunito Sans' } }
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              if (ctx.datasetIndex === 1) {
+                return `Overall rate: ${fmtPct(overallPcts[ctx.dataIndex])} (≈${ctx.raw.toFixed(1)} expected)`;
+              }
+              return `${ctx.raw} occurrence${ctx.raw === 1 ? '' : 's'} · ${fmtPct(pcts[ctx.dataIndex])} of this number's appearances`;
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // Text equivalent of the chart, so the data is not conveyed by the canvas alone.
+  document.getElementById('parity-chart-table').innerHTML = b && b.total
+    ? 'Values: ' + PARITY_PATTERNS.map((p, i) => `${p.short} — ${counts[i]} (${fmtPct(pcts[i])})`).join(' · ')
+    : '';
+
+  document.getElementById('parity-legend').innerHTML = PARITY_PATTERNS.map((p, i) =>
+    `<span class="ppl-item"><span class="ppl-swatch" style="background:${PARITY_COLORS[i]}"></span>${p.label} — ${counts[i]} (${fmtPct(pcts[i])})</span>`
+  ).join('');
+}
+
+function sortParityRows(rows) {
+  const { key, dir } = paritySort;
+  const mult = dir === 'asc' ? 1 : -1;
+  const val = (r) => {
+    switch (key) {
+      case 'total':   return r.total;
+      case 'pattern': return r.top ? r.top.index : -1;
+      case 'count':   return r.top ? r.top.count : -1;
+      case 'pctOfPb': return r.top ? r.top.pct : -1;
+      case 'delta':   return r.total ? r.deltaPP : -Infinity;
+      default:        return r.pb;
+    }
+  };
+  return [...rows].sort((a, b) => {
+    const d = val(a) - val(b);
+    return d !== 0 ? d * mult : a.pb - b.pb;
+  });
+}
+
+function renderParityTable() {
+  const tbody = document.getElementById('parity-tbody');
+  const rows = sortParityRows(parityData.rows);
+
+  // Reflect sort state on the headers for assistive tech.
+  const keys = ['pb', 'total', 'pattern', 'count', 'pctOfPb', 'delta'];
+  document.querySelectorAll('#parity-table thead th').forEach((th, i) => {
+    const caret = th.querySelector('.sort-caret');
+    if (keys[i] === paritySort.key) {
+      th.setAttribute('aria-sort', paritySort.dir === 'asc' ? 'ascending' : 'descending');
+      if (caret) caret.textContent = paritySort.dir === 'asc' ? '▲' : '▼';
+    } else {
+      th.removeAttribute('aria-sort');
+      if (caret) caret.textContent = '▲';
+    }
+  });
+
+  tbody.innerHTML = rows.map(r => {
+    const selected = r.pb === paritySelectedPb;
+    if (!r.total) {
+      return `<tr class="${selected ? 'is-selected' : ''}">
+        <td><span class="mini-ball red">${r.pb}</span></td>
+        <td class="mono">0</td><td colspan="4" style="color:var(--subtle);font-style:italic;">No appearances recorded</td>
+      </tr>`;
+    }
+    const dev = deviationMeta(r.deviation);
+    const overallPct = parityData.overall.pcts[r.top.index];
+    return `<tr class="${selected ? 'is-selected' : ''}">
+      <td>
+        <button type="button" onclick="onParitySelect(${r.pb})"
+          style="background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;gap:7px;font:inherit;color:inherit;"
+          aria-label="Show parity distribution for Powerball ${r.pb}">
+          <span class="mini-ball red">${r.pb}</span>
+        </button>
+      </td>
+      <td class="mono">${r.total}</td>
+      <td>${r.top.pattern.label}${r.top.tied ? ' <span style="color:var(--subtle);font-size:11px;">(tied)</span>' : ''}</td>
+      <td class="mono">${r.top.count}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="dist-bar-wrap"><span class="dist-bar-fill" style="width:${Math.min(r.top.pct, 100)}%;background:var(--orange);"></span></span>
+          <span class="mono">${fmtPct(r.top.pct)}</span>
+        </div>
+      </td>
+      <td>
+        <span class="dev-pill ${dev.cls}"><span aria-hidden="true">${dev.glyph}</span>${dev.word} noise</span>
+        <span class="mono" style="color:var(--muted);font-size:11px;margin-left:5px;">${fmtDelta(r.deltaPP)} vs ${fmtPct(overallPct)} · band ±${r.noiseBandPP.toFixed(1)}</span>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function sortParityTable(key) {
+  if (paritySort.key === key) {
+    paritySort.dir = paritySort.dir === 'asc' ? 'desc' : 'asc';
+  } else {
+    paritySort.key = key;
+    // Numeric columns are most useful largest-first on the initial click.
+    paritySort.dir = key === 'pb' ? 'asc' : 'desc';
+  }
+  renderParityTable();
+}
+
+function onParitySelect(value) {
+  const n = parseInt(String(value), 10);
+  if (!Number.isInteger(n) || n < 1 || n > 26) return;
+  if (n === paritySelectedPb) return;
+  paritySelectedPb = n;
+  const input = document.getElementById('parity-select');
+  if (input && String(input.value) !== String(n)) input.value = n;
+  renderParityCards();
+  renderParityInsight();
+  renderParityChart();
+  renderParityTable();
+}
+
+function renderParityAnalysis() {
+  parityData = buildParityAnalysis(RAW_DRAWS);
+  renderParityScope();
+  renderParityOptions();
+  renderParityCards();
+  renderParityInsight();
+  renderParityChart();
+  renderParityTable();
+}
+
+/* ═══════════════════════════════════════════════
+   DRAW HISTORY REFRESH
+   ═══════════════════════════════════════════════ */
+let historyRefreshInFlight = false;
+
+async function fetchLatestDraws() {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), DATA_SOURCE.timeoutMs);
+  try {
+    const res = await fetch(DATA_SOURCE.url, { signal: ctrl.signal, headers: { Accept: 'application/json' } });
+    if (!res.ok) throw new Error(`${DATA_SOURCE.name} responded with ${res.status}`);
+    const json = await res.json();
+    if (!Array.isArray(json)) throw new Error('Unexpected response format from data source');
+    const rows = json.map(normalizeSourceRecord).filter(Boolean);
+    if (!rows.length) throw new Error('No usable draw records in the response');
+    return rows;
+  } catch (err) {
+    if (err.name === 'AbortError') throw new Error('The data source timed out');
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function setHistoryStatus(text, state) {
+  const el = document.getElementById('history-status');
+  el.className = 'history-status' + (state ? ` is-${state}` : '');
+  el.textContent = text;
+}
+
+function setHistoryRefreshBusy(busy) {
+  const btn = document.getElementById('history-refresh-btn');
+  const label = document.getElementById('history-refresh-label');
+  btn.disabled = busy;
+  btn.classList.toggle('is-busy', busy);
+  btn.setAttribute('aria-busy', busy ? 'true' : 'false');
+  label.textContent = busy ? 'Refreshing…' : 'Refresh';
+}
+
+/* Re-runs every analytic view against the current RAW_DRAWS. */
+function recomputeAllAnalytics() {
+  const { wFreq, rFreq, sums } = computeStats();
+  const total = RAW_DRAWS.length;
+  renderLatest();
+  renderStats(wFreq, rFreq, sums);
+  renderFreqChart(wFreq, rFreq, total);
+  renderFreqBars(wFreq, rFreq, total);
+  renderSumChart(sums);
+  renderGapCharts(wFreq, rFreq, total);
+  renderHeatmaps(wFreq, rFreq, total);
+  renderInsights(wFreq, rFreq, sums, total);
+  renderFirstLevelPatterns();
+  renderDayOfWeekAnalysis();
+  renderParityAnalysis();
+
+  // Preserve any active search filter rather than resetting the user's view.
+  const q = document.getElementById('search-input').value;
+  filterHistory(q);
+}
+
+async function refreshDrawHistory() {
+  if (historyRefreshInFlight) return;
+  historyRefreshInFlight = true;
+  setHistoryRefreshBusy(true);
+  setHistoryStatus('Refreshing… fetching the latest results.', null);
+
+  try {
+    const incoming = await fetchLatestDraws();
+    const { draws, added } = mergeDraws(RAW_DRAWS, incoming);
+
+    // Mutate in place so every existing reference to RAW_DRAWS stays valid.
+    RAW_DRAWS.splice(0, RAW_DRAWS.length, ...draws);
+
+    recomputeAllAnalytics();
+    updateLastUpdated();
+
+    const latest = formatShortDate(parseDrawDate(RAW_DRAWS[0][0]));
+    if (added > 0) {
+      const msg = `Draw history updated — latest result: ${latest}. ${added} new drawing${added === 1 ? '' : 's'} added (${RAW_DRAWS.length.toLocaleString()} total).`;
+      setHistoryStatus(msg, 'ok');
+      showToast(`Draw history updated — latest result: ${latest}.`, 'success');
+      document.getElementById('history').classList.add('new-draw-pulse');
+      setTimeout(() => document.getElementById('history').classList.remove('new-draw-pulse'), 2100);
+    } else {
+      const msg = `Already up to date — latest result: ${latest} (${RAW_DRAWS.length.toLocaleString()} drawings).`;
+      setHistoryStatus(msg, 'ok');
+      showToast('Draw history is already up to date.', 'info');
+    }
+  } catch (err) {
+    // Existing history is untouched on failure.
+    const latest = RAW_DRAWS.length ? formatShortDate(parseDrawDate(RAW_DRAWS[0][0])) : 'unknown';
+    setHistoryStatus(
+      `Couldn't reach ${DATA_SOURCE.name} (${err.message}). Showing the last known data — latest result: ${latest}. Check your connection and press Refresh to try again.`,
+      'error'
+    );
+    showToast('Refresh failed — showing last known data.', 'error');
+  } finally {
+    historyRefreshInFlight = false;
+    setHistoryRefreshBusy(false);
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   SELF-TESTS
+   ═══════════════════════════════════════════════ */
+function runSelfTests() {
+  const results = [];
+  const check = (name, fn) => {
+    try {
+      const out = fn();
+      results.push({ name, pass: out === true, detail: out === true ? '' : String(out) });
+    } catch (e) {
+      results.push({ name, pass: false, detail: e.message });
+    }
+  };
+  const eq = (a, b, what) => a === b ? true : `${what}: expected ${b}, got ${a}`;
+
+  const D = (date, w, pb, pp = 2, jp = '$1M') => [date, ...w, pb, pp, jp];
+
+  /* — odd/even counting — */
+  check('countWhiteBallParity: all odd', () =>
+    eq(countWhiteBallParity(D('Sat Jan 3 2026', [1, 3, 5, 7, 9], 1)).oddWhiteBallCount, 5, 'odd count'));
+  check('countWhiteBallParity: all even', () =>
+    eq(countWhiteBallParity(D('Sat Jan 3 2026', [2, 4, 6, 8, 10], 1)).evenWhiteBallCount, 5, 'even count'));
+  check('countWhiteBallParity: 3 odd / 2 even', () => {
+    const r = countWhiteBallParity(D('Sat Jan 3 2026', [1, 2, 3, 4, 5], 7));
+    return r.oddWhiteBallCount === 3 && r.evenWhiteBallCount === 2
+      ? true : `got ${r.oddWhiteBallCount}o/${r.evenWhiteBallCount}e`;
+  });
+  check('countWhiteBallParity: odd + even always equals 5 across full dataset', () => {
+    for (const row of RAW_DRAWS) {
+      const r = countWhiteBallParity(row);
+      if (r.oddWhiteBallCount + r.evenWhiteBallCount !== 5) return `failed on ${row[0]}`;
+    }
+    return true;
+  });
+
+  /* — grouping by red Powerball — */
+  const fixture = [
+    D('Sat Jan 10 2026', [1, 3, 5, 7, 2], 1),   // 4 odd / 1 even
+    D('Wed Jan 7 2026',  [1, 3, 5, 9, 4], 1),   // 4 odd / 1 even
+    D('Mon Jan 5 2026',  [2, 4, 6, 8, 10], 1),  // 0 odd / 5 even
+    D('Sat Jan 3 2026',  [1, 2, 3, 4, 5], 26)   // 3 odd / 2 even
+  ];
+  const fx = buildParityAnalysis(fixture);
+
+  check('grouping: draws land under the correct Powerball', () =>
+    eq(fx.byPowerball[1].total, 3, 'PB #1 total'));
+  check('grouping: unrelated Powerball is unaffected', () =>
+    eq(fx.byPowerball[26].total, 1, 'PB #26 total'));
+  check('grouping: undrawn Powerball reports zero', () =>
+    eq(fx.byPowerball[13].total, 0, 'PB #13 total'));
+  check('grouping: per-number counts sum to that number\'s total', () =>
+    eq(fx.byPowerball[1].counts.reduce((a, b) => a + b, 0), 3, 'PB #1 count sum'));
+  check('grouping: overall counts sum to the dataset size', () =>
+    eq(fx.overall.counts.reduce((a, b) => a + b, 0), 4, 'overall sum'));
+
+  /* — frequency and percentage math — */
+  check('frequency: most common pattern identified', () =>
+    eq(fx.byPowerball[1].top.pattern.label, '4 Odd / 1 Even', 'PB #1 top pattern'));
+  check('frequency: top pattern count', () =>
+    eq(fx.byPowerball[1].top.count, 2, 'PB #1 top count'));
+  check('percentage: top pattern share', () =>
+    eq(fx.byPowerball[1].top.pct.toFixed(2), (200 / 3).toFixed(2), 'PB #1 top pct'));
+  check('percentage: shares for one number total 100', () =>
+    eq(fx.byPowerball[1].pcts.reduce((a, b) => a + b, 0).toFixed(4), '100.0000', 'PB #1 pct sum'));
+  check('percentage: empty group yields 0%, not NaN', () =>
+    eq(fx.byPowerball[13].pcts.every(p => p === 0), true, 'PB #13 pcts'));
+  check('percentage: full dataset shares total 100', () =>
+    eq(buildParityAnalysis(RAW_DRAWS).overall.pcts.reduce((a, b) => a + b, 0).toFixed(4), '100.0000', 'overall pct sum'));
+  check('deviation: a tiny sample is not called a signal', () =>
+    // PB #1 is 16.7 pp over the overall rate, but on only 3 draws.
+    eq(fx.byPowerball[1].deviation, 'near', 'PB #1 deviation'));
+  check('deviation: a large, consistent gap is flagged as above', () => {
+    // PB #1 is always 5-odd; every other draw is 2-odd. The gap is unmissable.
+    const big = [];
+    for (let i = 0; i < 60; i++)  big.push(D(`Sat Jan ${(i % 28) + 1} 2020`, [1, 3, 5, 7, 9], 1));
+    for (let i = 0; i < 300; i++) big.push(D(`Sat Jan ${(i % 28) + 1} 2021`, [1, 3, 2, 4, 6], 2));
+    const r = buildParityAnalysis(big).byPowerball[1];
+    return r.deviation === 'above' ? true : `got ${r.deviation} (delta ${r.deltaPP.toFixed(1)}, band ${r.noiseBandPP.toFixed(1)})`;
+  });
+  check('deviation: noise band widens as the sample shrinks', () => {
+    const small = buildParityAnalysis(fixture).byPowerball[1].noiseBandPP;
+    const full  = buildParityAnalysis(RAW_DRAWS).byPowerball[1].noiseBandPP;
+    return small > full ? true : `small=${small.toFixed(1)} full=${full.toFixed(1)}`;
+  });
+
+  /* — merge / no-duplicate behaviour — */
+  const base = [D('Wed Sep 2 2026', [3, 10, 29, 58, 64], 14, 2, '$146M')];
+  check('merge: re-merging identical data adds nothing', () => {
+    const m = mergeDraws(base, [D('Wed Sep 2 2026', [3, 10, 29, 58, 64], 14, 2, '—')]);
+    return m.added === 0 && m.draws.length === 1 ? true : `added ${m.added}, length ${m.draws.length}`;
+  });
+  check('merge: existing record wins over a thinner incoming one', () => {
+    const m = mergeDraws(base, [D('Wed Sep 2 2026', [3, 10, 29, 58, 64], 14, 2, '—')]);
+    return eq(m.draws[0][8], '$146M', 'jackpot field');
+  });
+  check('merge: a genuinely new draw is added', () => {
+    const m = mergeDraws(base, [D('Sat Sep 5 2026', [4, 11, 30, 59, 65], 7, 3, '—')]);
+    return m.added === 1 && m.draws.length === 2 ? true : `added ${m.added}, length ${m.draws.length}`;
+  });
+  check('merge: result is sorted newest-first', () => {
+    const m = mergeDraws(base, [D('Sat Sep 5 2026', [4, 11, 30, 59, 65], 7, 3, '—')]);
+    return eq(m.draws[0][0], 'Sat Sep 5 2026', 'first row');
+  });
+  check('merge: duplicates inside one incoming batch collapse', () => {
+    const dup = D('Sat Sep 5 2026', [4, 11, 30, 59, 65], 7, 3, '—');
+    const m = mergeDraws(base, [dup, dup, dup]);
+    return eq(m.added, 1, 'added');
+  });
+  check('merge: invalid rows are rejected', () => {
+    const m = mergeDraws(base, [
+      D('Mon Sep 7 2026', [4, 11, 30, 59, 70], 7),   // white ball out of range
+      D('Wed Sep 9 2026', [4, 11, 30, 59, 65], 27),  // Powerball out of range
+      D('Fri Sep 11 2026', [4, 4, 30, 59, 65], 7),   // duplicate white ball
+      ['not a date', 4, 11, 30, 59, 65, 7, 2, '—']
+    ]);
+    return eq(m.added, 0, 'added');
+  });
+  check('merge: live dataset contains no duplicate dates', () => {
+    const seen = new Set();
+    for (const row of RAW_DRAWS) {
+      const k = parseDrawDate(row[0]);
+      if (seen.has(k)) return `duplicate: ${row[0]}`;
+      seen.add(k);
+    }
+    return true;
+  });
+  check('merge: live dataset is ordered newest-first', () => {
+    for (let i = 1; i < RAW_DRAWS.length; i++) {
+      if (parseDrawDate(RAW_DRAWS[i - 1][0]) <= parseDrawDate(RAW_DRAWS[i][0])) {
+        return `out of order at ${RAW_DRAWS[i][0]}`;
+      }
+    }
+    return true;
+  });
+
+  /* — source normalization — */
+  check('normalize: Socrata record maps to a sorted internal row', () => {
+    const row = normalizeSourceRecord({ draw_date: '2026-09-02T00:00:00.000', winning_numbers: '03 10 64 29 58 14', multiplier: '2' });
+    return JSON.stringify(row.slice(0, 8)) === JSON.stringify(['Wed Sep 2 2026', 3, 10, 29, 58, 64, 14, 2])
+      ? true : JSON.stringify(row);
+  });
+  check('normalize: malformed record returns null', () =>
+    eq(normalizeSourceRecord({ draw_date: '2026-09-02', winning_numbers: '03 10' }), null, 'result'));
+  check('normalize: missing multiplier defaults to 1x', () => {
+    const row = normalizeSourceRecord({ draw_date: '2026-09-02T00:00:00.000', winning_numbers: '03 10 64 29 58 14' });
+    return eq(row[7], 1, 'power play');
+  });
+
+  /* — refresh state machine — */
+  check('refresh: button exposes a loading state and disables', () => {
+    setHistoryRefreshBusy(true);
+    const btn = document.getElementById('history-refresh-btn');
+    const busyOk = btn.disabled === true
+      && document.getElementById('history-refresh-label').textContent === 'Refreshing…'
+      && btn.getAttribute('aria-busy') === 'true';
+    setHistoryRefreshBusy(false);
+    const idleOk = btn.disabled === false
+      && document.getElementById('history-refresh-label').textContent === 'Refresh';
+    return busyOk && idleOk ? true : `busy=${busyOk} idle=${idleOk}`;
+  });
+  // These two drive the live status region, so snapshot it and put it back.
+  const statusEl = document.getElementById('history-status');
+  const savedStatus = { text: statusEl.textContent, cls: statusEl.className };
+  const restoreStatus = () => { statusEl.textContent = savedStatus.text; statusEl.className = savedStatus.cls; };
+
+  check('refresh: success state is announced', () => {
+    setHistoryStatus('Draw history updated — latest result: Sep 2, 2026.', 'ok');
+    const ok = statusEl.classList.contains('is-ok') && statusEl.getAttribute('aria-live') === 'polite';
+    restoreStatus();
+    return ok ? true : 'status element not in success state';
+  });
+  check('refresh: error state is announced and data is retained', () => {
+    const before = RAW_DRAWS.length;
+    setHistoryStatus('Couldn\'t reach the source. Showing the last known data.', 'error');
+    const ok = statusEl.classList.contains('is-error') && RAW_DRAWS.length === before;
+    restoreStatus();
+    return ok ? true : 'error state incorrect';
+  });
+  check('refresh: concurrent invocation is blocked while in flight', () => {
+    historyRefreshInFlight = true;
+    const guarded = historyRefreshInFlight === true;
+    historyRefreshInFlight = false;
+    return guarded ? true : 'guard flag not honoured';
+  });
+
+  return results;
+}
+
+function toggleSelfTests() {
+  const panel = document.getElementById('test-results');
+  const btn = document.getElementById('test-toggle-btn');
+  if (!panel.hidden) {
+    panel.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+    btn.textContent = 'Run analysis self-tests';
+    return;
+  }
+
+  const results = runSelfTests();
+  const passed = results.filter(r => r.pass).length;
+  panel.className = 'test-results';
+  panel.innerHTML =
+    results.map(r => `<div class="test-line ${r.pass ? 'test-pass' : 'test-fail'}">
+        <span class="tl-tag">${r.pass ? 'PASS' : 'FAIL'}</span>
+        <span>${r.name}${r.detail ? ` — ${r.detail}` : ''}</span>
+      </div>`).join('') +
+    `<div class="test-summary" style="color:${passed === results.length ? 'var(--green)' : 'var(--red)'}">
+       ${passed}/${results.length} passed
+     </div>`;
+  panel.hidden = false;
+  btn.setAttribute('aria-expanded', 'true');
+  btn.textContent = 'Hide self-tests';
+}
+
+/* ═══════════════════════════════════════════════
    INIT
    ═══════════════════════════════════════════════ */
 function init() {
@@ -3038,8 +4108,13 @@ function init() {
   renderInsights(wFreq, rFreq, sums, RAW_DRAWS.length);
   renderFirstLevelPatterns();
   renderDayOfWeekAnalysis();
+  renderParityAnalysis();
   renderHistory(RAW_DRAWS);
   updateLastUpdated();
+  setHistoryStatus(
+    `Loaded ${RAW_DRAWS.length.toLocaleString()} drawings · latest result: ${formatShortDate(parseDrawDate(RAW_DRAWS[0][0]))} · press Refresh to check for new results.`,
+    null
+  );
 
   // Hide loader
   setTimeout(() => {
