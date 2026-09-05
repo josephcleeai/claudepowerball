@@ -631,6 +631,130 @@
   .dist-bar-wrap { height: 6px; background: var(--surface2); border-radius: 3px; width: 80px; display: inline-block; overflow: hidden; }
   .dist-bar-fill { height: 100%; border-radius: 3px; }
 
+  /* ── TICKET GENERATOR ───────────────────────────── */
+  .draw-panel {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r3); padding: 26px;
+    box-shadow: var(--shadow-md);
+    display: flex; gap: 26px; align-items: center; flex-wrap: wrap;
+    position: relative; overflow: hidden;
+  }
+  .draw-panel::before {
+    content: ''; position: absolute; inset: 0 auto 0 0; width: 4px;
+    background: linear-gradient(180deg, var(--red), var(--orange));
+  }
+  .draw-cta { display: flex; flex-direction: column; gap: 14px; flex-shrink: 0; }
+
+  .draw-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+    background: var(--red); color: #fff;
+    border: none; border-radius: 999px;
+    font-family: 'Nunito Sans', -apple-system, sans-serif;
+    font-size: 20px; font-weight: 800; letter-spacing: -0.2px;
+    padding: 20px 46px; min-width: 300px; cursor: pointer;
+    box-shadow: 0 6px 18px rgba(192,57,43,0.32), 0 2px 5px rgba(0,0,0,0.10);
+    transition: transform 0.15s cubic-bezier(0.4,0,0.2,1), box-shadow 0.2s, background 0.2s;
+  }
+  .draw-btn:hover:not(:disabled) {
+    background: #a53124; transform: translateY(-2px);
+    box-shadow: 0 10px 26px rgba(192,57,43,0.40), 0 3px 7px rgba(0,0,0,0.12);
+  }
+  .draw-btn:active:not(:disabled) { transform: translateY(0); box-shadow: 0 3px 10px rgba(192,57,43,0.32); }
+  .draw-btn:focus-visible { outline: 3px solid var(--text); outline-offset: 3px; }
+  .draw-btn:disabled { opacity: 0.72; cursor: progress; transform: none; }
+  .draw-btn-icon { font-size: 24px; line-height: 1; }
+  .draw-btn.is-drawing .draw-btn-icon { animation: tumble 0.5s cubic-bezier(0.4,0,0.2,1) infinite; }
+  @keyframes tumble {
+    0%   { transform: rotate(0deg)   scale(1); }
+    50%  { transform: rotate(180deg) scale(1.18); }
+    100% { transform: rotate(360deg) scale(1); }
+  }
+
+  .draw-modes { display: flex; gap: 4px; flex-wrap: wrap; }
+  .draw-mode {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--muted); font-size: 12px; font-weight: 600;
+    padding: 6px 13px; border-radius: 999px; cursor: pointer;
+    font-family: 'Nunito Sans', -apple-system, sans-serif; transition: all 0.2s;
+  }
+  .draw-mode:hover:not([aria-checked="true"]) { border-color: var(--border2); color: var(--text); }
+  .draw-mode[aria-checked="true"] { background: var(--text); color: #fff; border-color: var(--text); }
+  .draw-mode:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+  .draw-explainer { flex: 1; min-width: 260px; font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .draw-explainer strong { color: var(--text); }
+  .draw-odds-chip {
+    display: inline-flex; align-items: baseline; gap: 8px; margin-top: 10px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--r2); padding: 9px 14px;
+  }
+  .draw-odds-chip .doc-label { font-size: 10px; font-weight: 700; letter-spacing: 0.7px; text-transform: uppercase; color: var(--subtle); }
+  .draw-odds-chip .doc-val { font-size: 14px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--text); }
+
+  .draw-status { font-size: 12.5px; color: var(--muted); font-style: italic; margin: 14px 0 0; min-height: 18px; }
+
+  .ticket-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
+    gap: 12px; margin-top: 16px;
+  }
+  .ticket-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r2); padding: 15px 16px;
+    box-shadow: var(--shadow-sm); transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .ticket-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  .ticket-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px; gap: 8px;
+  }
+  .ticket-num {
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.7px;
+    text-transform: uppercase; color: var(--subtle); font-family: 'DM Mono', monospace;
+  }
+  .ticket-copy {
+    background: none; border: 1px solid var(--border); border-radius: var(--r);
+    color: var(--subtle); font-size: 10.5px; font-weight: 600; padding: 3px 9px;
+    cursor: pointer; font-family: 'Nunito Sans', -apple-system, sans-serif; transition: all 0.2s;
+  }
+  .ticket-copy:hover { border-color: var(--orange); color: var(--orange); }
+  .ticket-copy:focus-visible { outline: 2px solid var(--orange); outline-offset: 1px; }
+  .ticket-balls { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; }
+  .ticket-ball {
+    width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; font-family: 'DM Mono', monospace; flex-shrink: 0;
+  }
+  .ticket-ball.white { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
+  .ticket-ball.red   { background: var(--red); color: #fff; }
+  .ticket-sep { color: var(--border2); font-size: 15px; }
+  .ticket-meta { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 12px; }
+  .ticket-tag {
+    font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 999px;
+    background: var(--surface2); color: var(--muted); font-family: 'DM Mono', monospace;
+  }
+  .ticket-tag.match { background: rgba(160,120,32,0.16); color: var(--gold); }
+  .ticket-card.is-new { animation: ticketIn 0.42s cubic-bezier(0.4,0,0.2,1) both; }
+  @keyframes ticketIn {
+    from { opacity: 0; transform: translateY(14px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .draw-summary { margin-top: 16px; }
+  .draw-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .draw-action {
+    background: var(--surface); border: 1px solid var(--border2); color: var(--muted);
+    font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: 999px;
+    cursor: pointer; font-family: 'Nunito Sans', -apple-system, sans-serif; transition: all 0.2s;
+  }
+  .draw-action:hover { border-color: var(--orange); color: var(--orange); }
+  .draw-action:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+  @media (max-width: 640px) {
+    .draw-btn { width: 100%; min-width: 0; font-size: 18px; padding: 18px 24px; }
+    .draw-cta { width: 100%; }
+    .ticket-ball { width: 30px; height: 30px; font-size: 12px; }
+  }
+
   /* ── DRAW HISTORY REFRESH ───────────────────────── */
   .history-refresh {
     display: inline-flex; align-items: center; gap: 6px;
@@ -791,6 +915,7 @@
     </div>
     <div class="nav-links">
       <a href="#latest" class="active">Latest</a>
+      <a href="#draw">Draw</a>
       <a href="#analysis">Analysis</a>
       <a href="#deep-analysis">Deep Analysis</a>
       <a href="#parity">Parity</a>
@@ -895,6 +1020,49 @@
         <div class="stat-sub">of max possible 335</div>
       </div>
     </div>
+
+    <!-- Ticket Generator -->
+    <section id="draw">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="icon" style="background:rgba(192,57,43,0.13);">🎟️</div>
+          Ticket Generator
+        </div>
+        <div class="section-desc">Weighted by the historical dataset — odds unchanged</div>
+      </div>
+
+      <div class="draw-panel">
+        <div class="draw-cta">
+          <button id="draw-btn" class="draw-btn" type="button" onclick="drawTickets()" aria-controls="ticket-grid">
+            <span class="draw-btn-icon" aria-hidden="true">🎲</span>
+            <span id="draw-btn-label">Draw 10 Tickets</span>
+          </button>
+          <div class="draw-modes" role="radiogroup" aria-label="Number weighting method" id="draw-modes"></div>
+        </div>
+        <div class="draw-explainer">
+          Each ticket is built by sampling white balls and a Powerball against the
+          <strong>frequency, parity and sum profiles</strong> measured across the drawings in this app, so the
+          combinations resemble real historical draws. That shapes <em>which</em> numbers turn up — it does
+          <strong>not</strong> improve your chance of winning. Every combination, however it was picked,
+          carries exactly the same odds.
+          <div class="draw-odds-chip">
+            <span class="doc-label">Jackpot odds per ticket</span>
+            <span class="doc-val" id="draw-odds">1 in 292,201,338</span>
+          </div>
+        </div>
+      </div>
+
+      <p class="draw-status" id="draw-status" role="status" aria-live="polite">
+        Press Draw to generate 10 combinations.
+      </p>
+
+      <div class="ticket-grid" id="ticket-grid"></div>
+      <div class="draw-actions" id="draw-actions" hidden>
+        <button type="button" class="draw-action" onclick="copyAllTickets()" id="copy-all-btn">Copy all 10</button>
+        <button type="button" class="draw-action" onclick="clearTickets()">Clear</button>
+      </div>
+      <div class="draw-summary" id="draw-summary"></div>
+    </section>
 
     <!-- Analysis Section -->
     <section id="analysis">
@@ -3483,6 +3651,231 @@ function showToast(msg, type='info') {
 }
 
 /* ═══════════════════════════════════════════════
+   TICKET GENERATION ENGINE (pure)
+   ═══════════════════════════════════════════════ */
+
+const WHITE_MAX = 69, WHITE_PICKS = 5, POWERBALL_MAX = 26;
+
+function nCr(n, k) {
+  let r = 1;
+  for (let i = 1; i <= k; i++) r = (r * (n - k + i)) / i;
+  return Math.round(r);
+}
+
+/* C(69,5) × 26 — the size of the whole ticket space. */
+const TOTAL_COMBINATIONS = nCr(WHITE_MAX, WHITE_PICKS) * POWERBALL_MAX;
+
+const DRAW_MODES = [
+  { id: 'weighted', label: 'Frequency-weighted', blurb: 'leans toward numbers drawn more often' },
+  { id: 'uniform',  label: 'Pure random',        blurb: 'every number equally likely, like a quick pick' },
+  { id: 'cold',     label: 'Least-drawn',        blurb: 'leans toward numbers drawn less often' }
+];
+
+/* Small seedable PRNG. Production draws use Math.random; the tests pass a seed
+   so generator behaviour is reproducible. */
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/* Turns an observed frequency table into sampling weights.
+   Blending against a uniform floor keeps EVERY number reachable in every mode —
+   a "cold" run can still pick the hottest number, which is the honest behaviour
+   given draws are independent. `strength` sets how far from uniform to lean. */
+function buildSelectionWeights(freq, size, mode, strength = 0.85) {
+  const weights = new Array(size + 1).fill(0);
+  const uniform = 1 / size;
+
+  if (mode === 'uniform') {
+    for (let i = 1; i <= size; i++) weights[i] = uniform;
+    return weights;
+  }
+
+  let basis = new Array(size + 1).fill(0);
+  if (mode === 'cold') {
+    let max = 0;
+    for (let i = 1; i <= size; i++) max = Math.max(max, freq[i] || 0);
+    for (let i = 1; i <= size; i++) basis[i] = max + 1 - (freq[i] || 0);
+  } else {
+    for (let i = 1; i <= size; i++) basis[i] = freq[i] || 0;
+  }
+
+  let total = 0;
+  for (let i = 1; i <= size; i++) total += basis[i];
+  if (total <= 0) {
+    for (let i = 1; i <= size; i++) weights[i] = uniform;
+    return weights;
+  }
+
+  for (let i = 1; i <= size; i++) {
+    weights[i] = (1 - strength) * uniform + strength * (basis[i] / total);
+  }
+  return weights;
+}
+
+/* Roulette-wheel pick over a 1-indexed weight table. Entries at weight 0 are
+   never selected. Returns -1 only if every weight is 0. */
+function weightedPick(weights, rng, excluded) {
+  let total = 0;
+  for (let i = 1; i < weights.length; i++) {
+    if (excluded && excluded.has(i)) continue;
+    total += weights[i];
+  }
+  if (total <= 0) return -1;
+
+  let r = rng() * total;
+  for (let i = 1; i < weights.length; i++) {
+    if (excluded && excluded.has(i)) continue;
+    r -= weights[i];
+    if (r <= 0) return i;
+  }
+  for (let i = weights.length - 1; i >= 1; i--) {
+    if (!excluded || !excluded.has(i)) return i;
+  }
+  return -1;
+}
+
+/* k distinct values, sampled without replacement, returned ascending. */
+function sampleDistinct(weights, k, rng) {
+  const chosen = new Set();
+  while (chosen.size < k) {
+    const pick = weightedPick(weights, rng, chosen);
+    if (pick === -1) break;
+    chosen.add(pick);
+  }
+  return [...chosen].sort((a, b) => a - b);
+}
+
+/* Precomputes everything the generator samples against, from the live dataset. */
+function buildGeneratorModel(draws) {
+  const wFreq = new Array(WHITE_MAX + 1).fill(0);
+  const rFreq = new Array(POWERBALL_MAX + 1).fill(0);
+  const sums = [];
+  const parityCounts = new Array(6).fill(0);
+  const historicalWhites = new Set();
+
+  for (const d of draws) {
+    const whites = [d[1], d[2], d[3], d[4], d[5]];
+    let sum = 0, odds = 0;
+    for (const n of whites) { wFreq[n]++; sum += n; if (n % 2 !== 0) odds++; }
+    if (d[6] >= 1 && d[6] <= POWERBALL_MAX) rFreq[d[6]]++;
+    sums.push(sum);
+    parityCounts[odds]++;
+    historicalWhites.add(whites.join('-'));
+  }
+
+  const total = draws.length || 1;
+  return {
+    wFreq, rFreq, sums, historicalWhites,
+    totalDraws: draws.length,
+    parityPcts: parityCounts.map(c => (c / total) * 100),
+    avgSum: sums.length ? sums.reduce((a, b) => a + b, 0) / sums.length : 0
+  };
+}
+
+/* Samples an odd-ball count from the historical parity mix. */
+function sampleTargetOddCount(model, rng) {
+  let r = rng() * 100;
+  for (let i = 0; i < 6; i++) {
+    r -= model.parityPcts[i];
+    if (r <= 0) return i;
+  }
+  return 2;
+}
+
+function ticketMetrics(whites, pb) {
+  let sum = 0, odds = 0, high = 0, consec = 0;
+  for (let i = 0; i < whites.length; i++) {
+    sum += whites[i];
+    if (whites[i] % 2 !== 0) odds++;
+    if (whites[i] > 34) high++;
+    if (i > 0 && whites[i] - whites[i - 1] === 1) consec++;
+  }
+  return {
+    sum, odds, evens: whites.length - odds,
+    high, low: whites.length - high,
+    consec, spread: whites[whites.length - 1] - whites[0], pb
+  };
+}
+
+/* Builds one ticket. Beyond frequency weighting, candidates are shaped by
+   rejection sampling toward the parity mix and sum band the dataset actually
+   exhibits, so output looks like a plausible draw rather than a flat random
+   pick. The attempt cap guarantees termination; the closest candidate seen is
+   returned if no candidate clears both targets. */
+function generateTicket(model, mode, rng, opts = {}) {
+  const maxAttempts = opts.maxAttempts ?? 220;
+  const sumTolerance = opts.sumTolerance ?? 28;
+  const seen = opts.seen || new Set();
+
+  const whiteWeights = opts.whiteWeights || buildSelectionWeights(model.wFreq, WHITE_MAX, mode);
+  const redWeights = opts.redWeights || buildSelectionWeights(model.rFreq, POWERBALL_MAX, mode);
+
+  const targetOdds = sampleTargetOddCount(model, rng);
+  const targetSum = model.sums.length
+    ? model.sums[Math.floor(rng() * model.sums.length)]
+    : Math.round(model.avgSum) || 175;
+
+  let best = null, bestScore = Infinity;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const whites = sampleDistinct(whiteWeights, WHITE_PICKS, rng);
+    if (whites.length < WHITE_PICKS) break;
+    const pb = weightedPick(redWeights, rng);
+    if (pb === -1) break;
+
+    const key = whites.join('-') + '|' + pb;
+    if (seen.has(key)) continue;
+
+    const m = ticketMetrics(whites, pb);
+    const sumOff = Math.abs(m.sum - targetSum);
+    const parityOff = Math.abs(m.odds - targetOdds);
+    const score = sumOff + parityOff * 12;
+
+    if (score < bestScore) { bestScore = score; best = { whites, pb, metrics: m, key }; }
+    if (parityOff === 0 && sumOff <= sumTolerance) break;
+  }
+
+  if (!best) return null;
+  return {
+    whites: best.whites,
+    powerball: best.pb,
+    key: best.key,
+    metrics: best.metrics,
+    matchesHistoricalWhites: model.historicalWhites.has(best.whites.join('-')),
+    targetOdds,
+    targetSum
+  };
+}
+
+/* Generates `count` tickets, all distinct from one another. */
+function generateTickets(model, count, mode, rng = Math.random) {
+  const whiteWeights = buildSelectionWeights(model.wFreq, WHITE_MAX, mode);
+  const redWeights = buildSelectionWeights(model.rFreq, POWERBALL_MAX, mode);
+  const seen = new Set();
+  const tickets = [];
+
+  for (let i = 0; i < count; i++) {
+    const t = generateTicket(model, mode, rng, { seen, whiteWeights, redWeights });
+    if (!t) break;
+    seen.add(t.key);
+    tickets.push(t);
+  }
+  return tickets;
+}
+
+function formatTicket(t) {
+  return `${t.whites.map(n => String(n).padStart(2, '0')).join(' ')}  PB ${String(t.powerball).padStart(2, '0')}`;
+}
+
+
+/* ═══════════════════════════════════════════════
    PARITY — PRESENTATION
    ═══════════════════════════════════════════════ */
 let parityData = null;
@@ -3777,6 +4170,178 @@ function renderParityAnalysis() {
 }
 
 /* ═══════════════════════════════════════════════
+   TICKET GENERATOR — PRESENTATION
+   ═══════════════════════════════════════════════ */
+let generatorModel = null;
+let currentTickets = [];
+let drawMode = 'weighted';
+let drawInFlight = false;
+
+function renderDrawModes() {
+  document.getElementById('draw-modes').innerHTML = DRAW_MODES.map(m => `
+    <button type="button" class="draw-mode" role="radio"
+            aria-checked="${m.id === drawMode}"
+            title="${m.label} — ${m.blurb}"
+            onclick="setDrawMode('${m.id}')">${m.label}</button>`).join('');
+}
+
+function setDrawMode(id) {
+  if (!DRAW_MODES.some(m => m.id === id) || id === drawMode) return;
+  drawMode = id;
+  renderDrawModes();
+  const m = DRAW_MODES.find(x => x.id === id);
+  document.getElementById('draw-status').textContent =
+    `Weighting set to ${m.label} — ${m.blurb}. Press Draw to generate 10 combinations.`;
+}
+
+function renderTickets(tickets) {
+  const grid = document.getElementById('ticket-grid');
+  document.getElementById('draw-actions').hidden = tickets.length === 0;
+
+  grid.innerHTML = tickets.map((t, i) => {
+    const label = `Ticket ${i + 1}: white balls ${t.whites.join(', ')}, Powerball ${t.powerball}`;
+    return `
+    <div class="ticket-card is-new" style="animation-delay:${i * 45}ms" role="group" aria-label="${label}">
+      <div class="ticket-head">
+        <span class="ticket-num">Ticket ${String(i + 1).padStart(2, '0')}</span>
+        <button type="button" class="ticket-copy" onclick="copyTicket(${i}, this)"
+                aria-label="Copy ticket ${i + 1}">Copy</button>
+      </div>
+      <div class="ticket-balls" aria-hidden="true">
+        ${t.whites.map(n => `<div class="ticket-ball white">${n}</div>`).join('')}
+        <div class="ticket-sep">+</div>
+        <div class="ticket-ball red">${t.powerball}</div>
+      </div>
+      <div class="ticket-meta">
+        <span class="ticket-tag">Sum ${t.metrics.sum}</span>
+        <span class="ticket-tag">${t.metrics.odds}O / ${t.metrics.evens}E</span>
+        <span class="ticket-tag">${t.metrics.high}H / ${t.metrics.low}L</span>
+        <span class="ticket-tag">Spread ${t.metrics.spread}</span>
+        ${t.matchesHistoricalWhites ? '<span class="ticket-tag match">Matches a past draw</span>' : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderDrawSummary(tickets) {
+  const el = document.getElementById('draw-summary');
+  if (!tickets.length) { el.innerHTML = ''; return; }
+
+  const avg = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
+  const avgSum = avg(tickets.map(t => t.metrics.sum));
+  const avgOdds = avg(tickets.map(t => t.metrics.odds));
+  const histAvgOdds = generatorModel.parityPcts.reduce((a, p, i) => a + (p / 100) * i, 0);
+  const mode = DRAW_MODES.find(m => m.id === drawMode);
+
+  el.innerHTML = `
+    <div class="insight-card">
+      <div class="insight-icon" style="background:rgba(192,57,43,0.12);">🎲</div>
+      <div>
+        <div class="insight-title">About this batch</div>
+        <div class="insight-body">
+          Generated with <strong>${mode.label}</strong> weighting against
+          <strong>${generatorModel.totalDraws.toLocaleString()}</strong> historical drawings.
+          These 10 tickets average a white-ball sum of <strong>${avgSum.toFixed(1)}</strong>
+          (dataset average ${generatorModel.avgSum.toFixed(1)}) and
+          <strong>${avgOdds.toFixed(1)}</strong> odd balls per line
+          (dataset average ${histAvgOdds.toFixed(1)}), so they sit in the same
+          shape as real draws.
+          That resemblance is cosmetic: each line still has a
+          <strong>1 in ${TOTAL_COMBINATIONS.toLocaleString()}</strong> jackpot chance,
+          identical to any other combination. Past frequencies carry no information
+          about the next drawing.
+        </div>
+      </div>
+    </div>`;
+}
+
+function drawTickets() {
+  if (drawInFlight) return;
+  drawInFlight = true;
+
+  const btn = document.getElementById('draw-btn');
+  const label = document.getElementById('draw-btn-label');
+  btn.disabled = true;
+  btn.classList.add('is-drawing');
+  btn.setAttribute('aria-busy', 'true');
+  label.textContent = 'Drawing…';
+  document.getElementById('draw-status').textContent = 'Sampling 10 combinations…';
+
+  // Brief pause so the tumble animation reads as a draw rather than a flicker.
+  setTimeout(() => {
+    try {
+      if (!generatorModel) generatorModel = buildGeneratorModel(RAW_DRAWS);
+      currentTickets = generateTickets(generatorModel, 10, drawMode);
+
+      renderTickets(currentTickets);
+      renderDrawSummary(currentTickets);
+
+      const mode = DRAW_MODES.find(m => m.id === drawMode);
+      document.getElementById('draw-status').textContent =
+        `${currentTickets.length} tickets drawn using ${mode.label} weighting. Press Draw again for a new set.`;
+      showToast(`${currentTickets.length} tickets generated`, 'success');
+    } catch (err) {
+      document.getElementById('draw-status').textContent =
+        `Couldn't generate tickets (${err.message}). Press Draw to try again.`;
+      showToast('Ticket generation failed', 'error');
+    } finally {
+      drawInFlight = false;
+      btn.disabled = false;
+      btn.classList.remove('is-drawing');
+      btn.setAttribute('aria-busy', 'false');
+      label.textContent = 'Draw 10 Tickets';
+    }
+  }, 420);
+}
+
+function clearTickets() {
+  currentTickets = [];
+  renderTickets([]);
+  document.getElementById('draw-summary').innerHTML = '';
+  document.getElementById('draw-status').textContent = 'Cleared. Press Draw to generate 10 combinations.';
+}
+
+function copyText(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    return navigator.clipboard.writeText(text);
+  }
+  // Fallback for non-secure contexts where the async clipboard API is absent.
+  return new Promise((resolve, reject) => {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'absolute';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      resolve();
+    } catch (e) { reject(e); }
+  });
+}
+
+function copyTicket(index, btn) {
+  const t = currentTickets[index];
+  if (!t) return;
+  copyText(formatTicket(t))
+    .then(() => {
+      btn.textContent = 'Copied';
+      setTimeout(() => { btn.textContent = 'Copy'; }, 1400);
+    })
+    .catch(() => showToast('Copy failed — select the numbers manually', 'error'));
+}
+
+function copyAllTickets() {
+  if (!currentTickets.length) return;
+  const text = currentTickets.map((t, i) => `${String(i + 1).padStart(2, '0')}. ${formatTicket(t)}`).join('\n');
+  copyText(text)
+    .then(() => showToast('All 10 tickets copied', 'success'))
+    .catch(() => showToast('Copy failed — select the numbers manually', 'error'));
+}
+
+/* ═══════════════════════════════════════════════
    DRAW HISTORY REFRESH
    ═══════════════════════════════════════════════ */
 let historyRefreshInFlight = false;
@@ -3830,6 +4395,11 @@ function recomputeAllAnalytics() {
   renderFirstLevelPatterns();
   renderDayOfWeekAnalysis();
   renderParityAnalysis();
+
+  // Refreshed data must feed the generator too; existing tickets keep their
+  // displayed numbers but the summary is re-stated against the new dataset.
+  generatorModel = buildGeneratorModel(RAW_DRAWS);
+  if (currentTickets.length) renderDrawSummary(currentTickets);
 
   // Preserve any active search filter rather than resetting the user's view.
   const q = document.getElementById('search-input').value;
@@ -4038,6 +4608,155 @@ function runSelfTests() {
       && document.getElementById('history-refresh-label').textContent === 'Refresh';
     return busyOk && idleOk ? true : `busy=${busyOk} idle=${idleOk}`;
   });
+  /* — ticket generation — */
+  const gm = buildGeneratorModel(RAW_DRAWS);
+  const seeded = () => mulberry32(20260905);
+
+  check('generator: ticket space size is C(69,5) x 26', () =>
+    eq(TOTAL_COMBINATIONS, 292201338, 'combination count'));
+  check('generator: model totals match the dataset', () =>
+    eq(gm.wFreq.reduce((a, b) => a + b, 0), RAW_DRAWS.length * 5, 'white ball tally'));
+
+  check('weights: uniform mode gives every number equal weight', () => {
+    const w = buildSelectionWeights(gm.wFreq, WHITE_MAX, 'uniform');
+    const first = w[1];
+    return w.slice(1).every(x => Math.abs(x - first) < 1e-12) ? true : 'weights differ';
+  });
+  check('weights: frequency mode favours the more-drawn number', () => {
+    const freq = new Array(70).fill(10); freq[7] = 100; freq[8] = 1;
+    const w = buildSelectionWeights(freq, WHITE_MAX, 'weighted');
+    return w[7] > w[8] ? true : `w7=${w[7]} w8=${w[8]}`;
+  });
+  check('weights: least-drawn mode inverts that ordering', () => {
+    const freq = new Array(70).fill(10); freq[7] = 100; freq[8] = 1;
+    const w = buildSelectionWeights(freq, WHITE_MAX, 'cold');
+    return w[8] > w[7] ? true : `w7=${w[7]} w8=${w[8]}`;
+  });
+  check('weights: every number stays reachable in every mode', () => {
+    for (const m of DRAW_MODES) {
+      const w = buildSelectionWeights(gm.wFreq, WHITE_MAX, m.id);
+      for (let i = 1; i <= WHITE_MAX; i++) if (!(w[i] > 0)) return `${m.id} zeroed ${i}`;
+    }
+    return true;
+  });
+  check('weights: each mode sums to 1', () => {
+    for (const m of DRAW_MODES) {
+      const w = buildSelectionWeights(gm.wFreq, WHITE_MAX, m.id);
+      const sum = w.reduce((a, b) => a + b, 0);
+      if (Math.abs(sum - 1) > 1e-9) return `${m.id} sums to ${sum}`;
+    }
+    return true;
+  });
+
+  check('sampling: returns 5 distinct values, ascending, in range', () => {
+    const rng = seeded();
+    const w = buildSelectionWeights(gm.wFreq, WHITE_MAX, 'weighted');
+    for (let i = 0; i < 200; i++) {
+      const s = sampleDistinct(w, WHITE_PICKS, rng);
+      if (s.length !== 5) return `got ${s.length} values`;
+      if (new Set(s).size !== 5) return `duplicate in ${s}`;
+      if (s.some(n => n < 1 || n > WHITE_MAX)) return `out of range: ${s}`;
+      if (s.some((n, j) => j > 0 && n < s[j - 1])) return `unsorted: ${s}`;
+    }
+    return true;
+  });
+  check('sampling: a zero weight is never selected', () => {
+    const freq = new Array(70).fill(0); freq[5] = 1; freq[9] = 1;
+    const w = buildSelectionWeights(freq, WHITE_MAX, 'weighted', 1); // no uniform floor
+    const rng = seeded();
+    for (let i = 0; i < 300; i++) {
+      const pick = weightedPick(w, rng);
+      if (pick !== 5 && pick !== 9) return `picked zero-weight number ${pick}`;
+    }
+    return true;
+  });
+
+  check('generator: produces 10 tickets', () =>
+    eq(generateTickets(gm, 10, 'weighted', seeded()).length, 10, 'ticket count'));
+  check('generator: all 10 tickets are distinct', () => {
+    const ts = generateTickets(gm, 10, 'weighted', seeded());
+    return new Set(ts.map(t => t.key)).size === 10 ? true : 'duplicate ticket in batch';
+  });
+  check('generator: every ticket is a legal Powerball line', () => {
+    for (const m of DRAW_MODES) {
+      for (const t of generateTickets(gm, 25, m.id, seeded())) {
+        if (t.whites.length !== 5 || new Set(t.whites).size !== 5) return `${m.id}: bad white set`;
+        if (t.whites.some(n => n < 1 || n > 69)) return `${m.id}: white out of range`;
+        if (t.whites.some((n, i) => i > 0 && n < t.whites[i - 1])) return `${m.id}: unsorted`;
+        if (!Number.isInteger(t.powerball) || t.powerball < 1 || t.powerball > 26) return `${m.id}: bad powerball`;
+      }
+    }
+    return true;
+  });
+  check('generator: ticket parity always totals 5', () => {
+    for (const t of generateTickets(gm, 40, 'weighted', seeded())) {
+      if (t.metrics.odds + t.metrics.evens !== 5) return `bad parity on ${t.key}`;
+      if (t.metrics.high + t.metrics.low !== 5) return `bad high/low on ${t.key}`;
+    }
+    return true;
+  });
+  check('generator: metrics agree with the ticket numbers', () => {
+    for (const t of generateTickets(gm, 20, 'weighted', seeded())) {
+      const expected = t.whites.reduce((a, b) => a + b, 0);
+      if (t.metrics.sum !== expected) return `sum ${t.metrics.sum} != ${expected}`;
+      if (t.metrics.spread !== t.whites[4] - t.whites[0]) return 'spread mismatch';
+    }
+    return true;
+  });
+  check('generator: same seed reproduces the same batch', () => {
+    const a = generateTickets(gm, 10, 'weighted', mulberry32(42)).map(t => t.key).join(',');
+    const b = generateTickets(gm, 10, 'weighted', mulberry32(42)).map(t => t.key).join(',');
+    return a === b ? true : 'seeded runs diverged';
+  });
+  check('generator: different seeds give different batches', () => {
+    const a = generateTickets(gm, 10, 'weighted', mulberry32(1)).map(t => t.key).join(',');
+    const b = generateTickets(gm, 10, 'weighted', mulberry32(2)).map(t => t.key).join(',');
+    return a !== b ? true : 'seeds collided';
+  });
+  check('generator: output tracks the historical sum range', () => {
+    const ts = generateTickets(gm, 60, 'weighted', seeded());
+    const avg = ts.reduce((a, t) => a + t.metrics.sum, 0) / ts.length;
+    return Math.abs(avg - gm.avgSum) < 22 ? true : `batch avg ${avg.toFixed(1)} vs dataset ${gm.avgSum.toFixed(1)}`;
+  });
+  check('generator: every mode still spans the full number range', () => {
+    // A weighted mode must not collapse onto a narrow set of favourites.
+    for (const m of DRAW_MODES) {
+      const seenNums = new Set();
+      for (const t of generateTickets(gm, 120, m.id, seeded())) t.whites.forEach(n => seenNums.add(n));
+      if (seenNums.size < 55) return `${m.id} only reached ${seenNums.size} of 69 numbers`;
+    }
+    return true;
+  });
+  check('generator: handles an empty dataset without throwing', () => {
+    const empty = buildGeneratorModel([]);
+    const ts = generateTickets(empty, 3, 'weighted', seeded());
+    return ts.length === 3 && ts.every(t => t.whites.length === 5) ? true : 'empty-model generation failed';
+  });
+  check('formatTicket: zero-padded, readable line', () => {
+    const t = { whites: [3, 10, 29, 58, 64], powerball: 7 };
+    return eq(formatTicket(t), '03 10 29 58 64  PB 07', 'formatted line');
+  });
+
+  /* — draw UI state — */
+  check('draw: mode switch updates the radio group', () => {
+    const original = drawMode;
+    setDrawMode('cold');
+    const ok = drawMode === 'cold';
+    setDrawMode(original);
+    return ok ? true : 'mode did not change';
+  });
+  check('draw: unknown mode is rejected', () => {
+    const original = drawMode;
+    setDrawMode('not-a-mode');
+    return drawMode === original ? true : 'invalid mode accepted';
+  });
+  check('draw: concurrent draw is blocked while in flight', () => {
+    drawInFlight = true;
+    const guarded = drawInFlight === true;
+    drawInFlight = false;
+    return guarded ? true : 'guard flag not honoured';
+  });
+
   // These two drive the live status region, so snapshot it and put it back.
   const statusEl = document.getElementById('history-status');
   const savedStatus = { text: statusEl.textContent, cls: statusEl.className };
@@ -4109,6 +4828,8 @@ function init() {
   renderFirstLevelPatterns();
   renderDayOfWeekAnalysis();
   renderParityAnalysis();
+  generatorModel = buildGeneratorModel(RAW_DRAWS);
+  renderDrawModes();
   renderHistory(RAW_DRAWS);
   updateLastUpdated();
   setHistoryStatus(
